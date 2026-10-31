@@ -1,15 +1,19 @@
 package io.github.mauriciogamedev.cloudhub.providers
 
-/**
- * A provider entry describes how this app can hand off to a cloud-gaming service.
- *
- * EXTERNAL_HANDOFF is deliberately distinct from an in-app integration. It means
- * the app opens the provider's official HTTPS entry point and leaves login and
- * streaming to the provider's own app or supported browser.
- */
 enum class ProviderIntegrationStage {
-    EXTERNAL_HANDOFF,
-    IN_APP_INTEGRATION_PLANNED
+    EXPERIMENTAL_IN_APP,
+    EXTERNAL_HANDOFF
+}
+
+/**
+ * Describes the cost of accessing the streaming service itself.
+ * This is intentionally separate from whether an individual game is free.
+ */
+enum class ProviderAccessModel {
+    FREE_GAMES_WITH_FREE_ACCOUNT,
+    FREE_TIER_AVAILABLE,
+    PAID_SUBSCRIPTION,
+    PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE
 }
 
 data class CloudProvider(
@@ -18,5 +22,7 @@ data class CloudProvider(
     val description: String,
     val launchUrl: String,
     val integrationStage: ProviderIntegrationStage,
+    val accessModel: ProviderAccessModel,
+    val accessNote: String,
     val integrationNote: String
 )
