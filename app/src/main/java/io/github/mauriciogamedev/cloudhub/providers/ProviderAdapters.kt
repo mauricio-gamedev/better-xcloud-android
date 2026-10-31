@@ -33,8 +33,8 @@ class XboxCloudProviderAdapter : CloudProviderAdapter {
     override fun launch(activity: Activity, destination: String) {
         val uri = Uri.parse(destination)
         val validHost = uri.scheme == "https" && uri.host == "www.xbox.com"
-        val validPath = uri.path?.startsWith("/pt-BR/play") == true ||
-            uri.path?.startsWith("/en-US/play") == true
+        val path = uri.path?.lowercase().orEmpty()
+        val validPath = path.startsWith("/pt-br/play") || path.startsWith("/en-us/play")
 
         if (!validHost || !validPath) {
             Toast.makeText(activity, "Endereço do Xbox Cloud não permitido.", Toast.LENGTH_LONG).show()
