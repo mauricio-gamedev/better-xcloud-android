@@ -13,11 +13,9 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import io.github.mauriciogamedev.cloudhub.games.GameAccessType
 import io.github.mauriciogamedev.cloudhub.games.GameCatalog
 import io.github.mauriciogamedev.cloudhub.games.GameFilter
 import io.github.mauriciogamedev.cloudhub.providers.CloudProvider
-import io.github.mauriciogamedev.cloudhub.providers.ProviderAccessModel
 import io.github.mauriciogamedev.cloudhub.providers.ProviderAdapterRegistry
 import io.github.mauriciogamedev.cloudhub.providers.ProviderCatalog
 import io.github.mauriciogamedev.cloudhub.providers.ProviderIntegrationStage
@@ -91,8 +89,8 @@ class MainActivity : Activity() {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.START
         }
-        filters.addView(filterButton("Só grátis", GameFilter.FREE_ONLY), withMargins(end = 8))
-        filters.addView(filterButton("Todos", GameFilter.ALL), withMargins())
+        filters.addView(filterButton("Só grátis", GameFilter.FREE_ONLY), wrapMargins(end = 8))
+        filters.addView(filterButton("Todos", GameFilter.ALL), wrapMargins())
         page.addView(filters, withMargins(bottom = 12))
 
         gamesContainer = LinearLayout(this).apply {
@@ -273,6 +271,14 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
+
+    private fun wrapMargins(end: Int = 0): LinearLayout.LayoutParams =
+        LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            marginEnd = dp(end)
+        }
 
     private fun withMargins(
         top: Int = 0,
