@@ -30,6 +30,16 @@ class GameCatalogTest {
     }
 
     @Test
+    fun fortniteXboxLinkUsesTheVerifiedXboxProductId() {
+        val link = GameCatalog.all.single { it.id == "fortnite" }
+            .providerLaunchUrls[ProviderCatalog.XBOX_CLOUD_ID]
+        assertEquals(
+            "https://www.xbox.com/pt-br/play/games/fortnite/bt5p2x999vh2",
+            link
+        )
+    }
+
+    @Test
     fun onlyFortniteIsSeededForXboxFreeCloudAccess() {
         val xboxGames = GameCatalog.all.filter {
             ProviderCatalog.XBOX_CLOUD_ID in it.providerLaunchUrls
