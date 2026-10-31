@@ -17,7 +17,7 @@ object GameCatalog {
             description = "Battle Royale e Zero Build. Grátis no Xbox Cloud e GeForce NOW; itens opcionais.",
             accessType = GameAccessType.FREE_TO_PLAY,
             providerLaunchUrls = mapOf(
-                ProviderCatalog.XBOX_CLOUD_ID to "https://www.xbox.com/pt-BR/play/games/fortnite",
+                ProviderCatalog.XBOX_CLOUD_ID to "https://www.xbox.com/pt-br/play/games/fortnite/bt5p2x999vh2",
                 ProviderCatalog.GEFORCE_NOW_ID to GFN_URL
             ),
             sourceUrls = listOf(
