@@ -1,97 +1,80 @@
 # Cloud Hub
 
 **Codinome de desenvolvimento:** Better xCloud Custom  
-**Versão de desenvolvimento:** 0.3.1  
+**Versão de desenvolvimento:** 0.4.0  
 **Dispositivo de referência:** Samsung Galaxy A06 (Android 16)
 
-O Cloud Hub é uma plataforma Android em desenvolvimento para reunir serviços de cloud gaming em uma única interface. O foco é **free-first**: jogos free-to-play e formas legítimas de jogar sem comprar o título aparecem antes das opções pagas.
+O Cloud Hub é uma plataforma Android independente para reunir serviços de cloud gaming em uma única interface. O foco é **free-first**: jogos free-to-play e formas legítimas de jogar sem comprar o título aparecem antes das opções pagas.
 
-> **Estado atual:** o APK inclui o userscript Better xCloud 6.7.12. O botão de Fortnite no Xbox agora abre a página específica do produto dentro da Activity do Cloud Hub; o jogador ainda precisa autenticar e confirmar **Jogar** no fluxo do Xbox. A integração Xbox é experimental e ainda precisa de validação real de login, controle, áudio, streaming e consumo de memória no Galaxy A06. GeForce NOW, Boosteroid e Blacknut ainda não possuem player integrado.
+> **Estado atual:** Xbox usa Better xCloud 6.7.12 em WebView experimental. GeForce NOW agora tem adaptador próprio e abre seu catálogo dentro de um player WebView experimental do Cloud Hub. A NVIDIA documenta streaming via Chrome no Android, mas não certifica explicitamente WebView embutido; a integração precisa ser testada no Galaxy A06. Boosteroid e Blacknut continuam externos até existir validação específica.
 
 ## Catálogo grátis
 
-A versão 0.3.0 traz **12 jogos free-to-play** no filtro inicial "Só grátis":
+O catálogo inicial possui 12 jogos free-to-play: Fortnite, Apex Legends, Destiny 2, Rocket League, Genshin Impact, Honkai: Star Rail, Wuthering Waves, Zenless Zone Zero, Marvel Rivals, Counter-Strike 2, Warframe e Dota 2.
 
-- Fortnite
-- Apex Legends
-- Destiny 2
-- Rocket League
-- Genshin Impact
-- Honkai: Star Rail
-- Wuthering Waves
-- Zenless Zone Zero
-- Marvel Rivals
-- Counter-Strike 2
-- Warframe
-- Dota 2
-
-Fortnite é o único título da lista com acesso grátis verificado no Xbox Cloud e no GeForce NOW. Os outros 11 estão associados ao GeForce NOW; a compatibilidade foi conferida em um catálogo regional brasileiro com snapshot visível de 13/09/2026. A lista regional pode mudar, então o app exibe essa ressalva e o usuário deve confirmar a disponibilidade no serviço antes de iniciar.
-
-A ABYA confirma plano gratuito no Brasil e mais de 75 jogos free-to-play; a listagem do app GeForce NOW na Google Play, atualizada em 28/10/2026, informa mais de 100 títulos grátis e cita Fortnite, Apex Legends e Destiny 2.
+Fortnite é o único título com acesso grátis verificado no Xbox Cloud e no GeForce NOW. Os outros 11 estão associados ao GeForce NOW por uma verificação regional brasileira com snapshot visível de 13/09/2026. A lista pode mudar; confirme a disponibilidade dentro do serviço.
 
 ## Custo do jogo não é custo do serviço
 
-O projeto mantém essas duas informações separadas:
-
+O app mantém separados:
 1. **Custo do jogo:** free-to-play, promoção gratuita, incluído em assinatura, compra necessária ou não verificado.
 2. **Custo do serviço:** plano gratuito, acesso gratuito a títulos selecionados, assinatura paga ou teste regional.
 
-Assim, um jogo gratuito pode continuar exigindo uma conta ou plano do serviço, e um plano gratuito do serviço não transforma jogos pagos em gratuitos. O filtro "Só grátis" não inclui jogos que exigem assinatura ou compra individual.
+Um jogo grátis pode exigir conta/plano específico do serviço; uma membership gratuita não transforma jogos pagos em gratuitos.
 
-## Provedores no catálogo
+## Provedores
 
-| Serviço | Acesso ao serviço | Integração |
+| Serviço | Acesso | Integração |
 | --- | --- | --- |
-| Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita; catálogo maior exige plano elegível | Better xCloud embutido em WebView experimental |
-| GeForce NOW Powered by ABYA | Membership gratuita no Brasil; limites de fila e sessão | Abre serviço oficial externamente |
-| Boosteroid | Assinatura paga | Abre serviço oficial externamente |
-| Blacknut | Assinatura; teste pode variar por região | Abre serviço oficial externamente |
+| Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita | Better xCloud em WebView experimental |
+| GeForce NOW Powered by ABYA | Membership gratuita no Brasil, com limites | Player WebView interno experimental; catálogo geral |
+| Boosteroid | Assinatura paga | Abertura externa |
+| Blacknut | Assinatura; teste pode variar | Abertura externa |
 
-## Integração Xbox / Better xCloud
+## Player interno e adaptadores
+
+O registry encaminha cada provedor ao seu adaptador. O player comum centraliza navegação, cookies da sessão, fullscreen, retorno, recarga, progresso e recuperação do renderer. Cada provedor possui uma allowlist HTTPS própria; hosts externos são abertos no navegador e esquemas desconhecidos são bloqueados.
+
+O player GFN abre o catálogo geral. Ainda é necessário selecionar o jogo dentro do serviço, porque não há deep link Android por título verificado neste catálogo. Compatibilidade do Android WebView não é garantida pelo suporte oficial de Chrome Android.
+
+## Xbox / Better xCloud
 
 - Userscript upstream fixado na revisão `f8397043f6d2148d2345d508902a38c69cf1ee20`.
-- Versão incluída: `6.7.12`.
-- Blob Git upstream: `05ad4c1e2d31caaaeaa2bcf3b7bd06d3c0f76a0f`.
+- Versão: `6.7.12`.
+- Blob SHA: `05ad4c1e2d31caaaeaa2bcf3b7bd06d3c0f76a0f`.
 - Injeção com `WebViewCompat.addDocumentStartJavaScript`, limitada à origem `https://www.xbox.com`.
-- O script é executado somente no frame principal.
-- Sem `addJavascriptInterface`: nenhum bridge genérico do JavaScript da página para métodos nativos é exposto.
-- Se o WebView não suportar a injeção no início do documento, o app oferece alternativa para abrir o Xbox no navegador.
+- Sem `addJavascriptInterface`; nenhum bridge genérico do JavaScript para métodos nativos.
 
-O código-fonte do aplicativo Android oficial do Better xCloud não está neste repositório upstream; este projeto usa uma implementação Android própria e o userscript aberto, mantendo os avisos MIT. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+O projeto é independente e não oficial. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) para as atribuições e licenças.
 
 ## Compilar
 
-O workflow `.github/workflows/android-build.yml` executa testes unitários e gera um APK de debug.
+O workflow `.github/workflows/android-build.yml` executa testes unitários e gera um APK debug.
 
-Requisitos locais:
-- JDK 17
-- Gradle 9.5.0
-- Android SDK Platform 36 e Build Tools 36.0.0
-
-Comando:
+Requisitos: JDK 17, Gradle 9.5.0, Android SDK Platform 36 e Build Tools 36.0.0.
 
 ```bash
 gradle --no-daemon testDebugUnitTest assembleDebug
 ```
 
-O APK de debug é gerado em `app/build/outputs/apk/debug/app-debug.apk`.
+O APK é gerado em `app/build/outputs/apk/debug/app-debug.apk`.
 
-## Arquitetura e validação
+## Documentação
 
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Estado dos provedores](docs/PROVIDER-STATUS.md)
 - [Política free-first](docs/FREE-FIRST-POLICY.md)
 
-## Princípios do projeto
+## Princípios
 
-1. Não armazenar senhas, cookies ou tokens dos serviços em código próprio.
-2. Não contornar DRM, fila, limite de plano ou restrições regionais.
-3. Não marcar como integrado um serviço que só abre um link externo.
-4. Não assumir que um jogo gratuito na loja também está disponível em cloud gaming.
-5. Não forçar WebGPU, filtros gráficos ou tarefas persistentes no Galaxy A06.
-6. Preservar licenças, avisos e atribuições de código de terceiros.
+1. Não armazenar senhas, tokens ou cookies de outros apps.
+2. Não contornar DRM, fila, limites de plano ou restrições regionais.
+3. Não alegar integração quando há apenas redirecionamento externo.
+4. Não presumir compatibilidade de um jogo por ele ser gratuito na loja.
+5. Não forçar WebGPU, filtros gráficos, resolução ou FPS no Galaxy A06.
+6. Preservar licenças e atribuições de código de terceiros.
 
-Este é um projeto independente e não oficial, sem afiliação com Microsoft, Xbox, NVIDIA, ABYA, Boosteroid ou Blacknut.
+Este é um projeto independente, sem afiliação com Microsoft, Xbox, NVIDIA, ABYA, Boosteroid ou Blacknut.
 
 - [Better xCloud — código-fonte](https://github.com/redphx/better-xcloud)
 - [Better xCloud para Android — repositório upstream](https://github.com/redphx/better-xcloud-android)

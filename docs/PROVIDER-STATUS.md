@@ -1,16 +1,16 @@
 # Estado dos provedores
 
-| Provedor | Acesso gratuito | Estado de integração | Observações |
+| Provedor | Modelo de acesso | Integração no Cloud Hub | Estado |
 | --- | --- | --- | --- |
-| Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita | WebView experimental + Better xCloud 6.7.12 | Fortnite é o título grátis confirmado neste catálogo; a biblioteca maior exige plano elegível |
-| GeForce NOW Powered by ABYA | Membership gratuita no Brasil | Acesso externo | ABYA confirma plano sem método de pagamento e 75+ F2P; app oficial lista 100+ F2P; sessões/fila podem ter limites |
-| Boosteroid | Não há plano grátis padrão confirmado neste projeto | Acesso externo | Assinatura paga; compra do jogo pode ser necessária |
-| Blacknut | Teste pode existir em ofertas/regiões específicas | Acesso externo | Catálogo principal exige assinatura |
+| Xbox Cloud Gaming | Alguns títulos selecionados com conta Microsoft gratuita | WebView própria + Better xCloud 6.7.12 | Experimental; login e streaming ainda precisam de validação no A06 |
+| GeForce NOW Powered by ABYA | Membership gratuita no Brasil, com limites de fila/sessão | Player WebView interno experimental | Catálogo abre dentro do app; WebView não é explicitamente certificada pela NVIDIA |
+| Boosteroid | Assinatura paga | Abre site/app oficial externamente | Adaptador externo até validar streaming Android interno |
+| Blacknut | Assinatura; teste pode variar por oferta/região | Abre site/app oficial externamente | Adaptador externo até validar streaming Android interno |
 
-## Catálogo de jogos
+## Catálogo free-first
 
-O catálogo free-first inicial contém 12 jogos:
-- Fortnite (Xbox Cloud + GeForce NOW)
+O catálogo inicial contém 12 jogos free-to-play:
+- Fortnite
 - Apex Legends
 - Destiny 2
 - Rocket League
@@ -23,27 +23,24 @@ O catálogo free-first inicial contém 12 jogos:
 - Warframe
 - Dota 2
 
-Fortnite é o único dos 12 com acesso gratuito verificado nos dois provedores. Os outros 11 usam GeForce NOW. A compatibilidade regional dos 11 foi conferida no diretório regional do GeForce NOW Brasil, cujo snapshot visível está datado de 13/09/2026; a disponibilidade pode mudar. O usuário deve confirmar o jogo na biblioteca do serviço antes de iniciar.
+Fortnite é o único com acesso grátis verificado nos dois provedores deste catálogo; os outros 11 estão associados ao GeForce NOW a partir de uma verificação regional datada de 13/09/2026. A disponibilidade deve ser confirmada dentro do serviço. Jogo free-to-play não significa que todo plano do serviço garanta acesso imediato.
 
-O custo do jogo é separado do custo do serviço:
-- Um jogo F2P ainda pode ter itens opcionais pagos.
-- Uma membership Free não torna todos os jogos do GeForce NOW gratuitos.
-- Títulos pagos ou incluídos em assinatura não entram no filtro "Só grátis".
+## O que está implementado
 
-## O que está efetivamente implementado
+- Xbox: Better xCloud é injetado no início da origem Xbox. Fortnite usa a rota de produto Xbox `BT5P2X999VH2`; o usuário ainda precisa fazer login e pressionar Jogar.
+- GeForce NOW: existe um adaptador próprio e o novo player abre `https://play.geforcenow.com/` dentro do Cloud Hub. O título escolhido é mostrado como contexto. O catálogo geral é aberto; o usuário precisa escolher o jogo no serviço.
+- Boosteroid e Blacknut: abrem os destinos oficiais externamente. Não são apresentados como players internos.
 
-- Xbox: userscript Better xCloud incluído no APK e configurado para injeção no início de documentos da origem Xbox. Fortnite agora usa a rota de produto Xbox `BT5P2X999VH2`, abrindo a página do título dentro da Activity; ainda é necessário login Microsoft e confirmar Jogar. A integração é experimental até testes no dispositivo.
-- GeForce NOW: os botões atuais abrem o catálogo geral, não iniciam o jogo selecionado. A NVIDIA documenta deep links com IDs por jogo, mas a especificação pública limita navegadores suportados a desktop e descreve a abertura da página de detalhes, não início automático da sessão. A integração interna Android ainda não está implementada.
-- Boosteroid e Blacknut: o app abre a URL HTTPS oficial. Não existe streaming incorporado nesses módulos.
-- Os registros de jogo guardam links de preço e compatibilidade; a disponibilidade é revalidada no serviço antes de jogar.
+## Limites técnicos conhecidos
+
+A NVIDIA documenta streaming por Chrome em dispositivos Android, mas isso não garante compatibilidade do Android WebView embutido. O app oficial Android continua sendo a experiência recomendada pelo provedor. O Cloud Hub não contorna filas, planos, região, autenticação, DRM ou propriedade do jogo.
+
+Ainda não há deep link Android por jogo verificado para os registros GFN deste catálogo. Não inventar identificadores ou rotas para simular início automático.
 
 ## Testes pendentes no Galaxy A06
 
-- Login Microsoft, incluindo redirecionamento de autenticação.
-- Início e término de sessão.
-- Áudio, toque e controle Bluetooth.
-- Rotação, botão voltar e retomada.
-- Uso de RAM e comportamento quando o Android encerra o processo do WebView.
-- Fallback em versões do WebView sem `DOCUMENT_START_SCRIPT`.
+- Xbox: login, retorno de autenticação, início/fim de sessão, áudio, toque e controle Bluetooth.
+- GFN: login federado, catálogo, seleção de jogo, sessão, áudio, controle, fullscreen e retorno.
+- Ambos: rotação, retomada, encerramento do renderer, fallback, consumo de RAM e estabilidade após várias partidas.
 
-Nenhuma integração deve ser marcada como estável antes desses testes.
+Nenhum player será marcado como estável antes de completar os testes em aparelho físico.
