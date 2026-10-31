@@ -113,7 +113,7 @@ class CloudPlayerActivity : Activity() {
         if (gameTitle != null) {
             content.addView(TextView(this).apply {
                 text = "O serviço será aberto no catálogo. Selecione " + gameTitle +
-                    " dentro do GeForce NOW; o Cloud Hub ainda não possui um deep link Android por jogo verificado."
+                    " dentro do " + activeProfile.displayName + "; o Cloud Hub ainda não possui um deep link Android por jogo verificado."
                 textSize = 11f
                 setTextColor(MUTED)
                 setPadding(dp(12), dp(8), dp(12), dp(8))
@@ -172,7 +172,7 @@ class CloudPlayerActivity : Activity() {
                 progress.visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
             }
 
-            override fun onShowCustomView(view: View, callback: CustomViewCallback) {
+            override fun onShowCustomView(view: View, callback: WebChromeClient.CustomViewCallback) {
                 if (customView != null) {
                     callback.onCustomViewHidden()
                     return

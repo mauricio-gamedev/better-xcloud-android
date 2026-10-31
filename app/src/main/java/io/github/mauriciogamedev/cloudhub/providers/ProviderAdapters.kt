@@ -47,18 +47,20 @@ class XboxCloudProviderAdapter : CloudProviderAdapter {
     }
 }
 
-/** Android Chrome streaming is documented by NVIDIA; embedded WebView remains experimental. */
-class GeForceNowProviderAdapter : CloudProviderAdapter {
+/** Shared player shell; each service supplies its own HTTPS allowlist. */
+class EmbeddedWebProviderAdapter(
+    private val providerId: String
+) : CloudProviderAdapter {
     override fun launch(activity: Activity, destination: String, gameTitle: String?) {
-        val profile = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)
+        val profile = ProviderWebProfiles.forProvider(providerId)
         val uri = runCatching { URI(destination) }.getOrNull()
         if (profile == null || uri == null || !profile.allows(uri)) {
-            Toast.makeText(activity, "Endereço do GeForce NOW não permitido.", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "Endereço do serviço não permitido.", Toast.LENGTH_LONG).show()
             return
         }
         activity.startActivity(
             Intent(activity, CloudPlayerActivity::class.java)
-                .putExtra(CloudPlayerActivity.EXTRA_PROVIDER_ID, ProviderCatalog.GEFORCE_NOW_ID)
+                .putExtra(CloudPlayerActivity.EXTRA_PROVIDER_ID, providerId)
                 .putExtra(CloudPlayerActivity.EXTRA_START_URL, uri.toString())
                 .putExtra(CloudPlayerActivity.EXTRA_GAME_TITLE, gameTitle)
         )
@@ -68,12 +70,16 @@ class GeForceNowProviderAdapter : CloudProviderAdapter {
 object ProviderAdapterRegistry {
     private val external = ExternalLinkProviderAdapter()
     private val xbox = XboxCloudProviderAdapter()
-    private val geforceNow = GeForceNowProviderAdapter()
+    private val geforceNow = EmbeddedWebProviderAdapter(ProviderCatalog.GEFORCE_NOW_ID)
+    private val boosteroid = EmbeddedWebProviderAdapter(ProviderCatalog.BOOSTEROID_ID)
+    private val blacknut = EmbeddedWebProviderAdapter(ProviderCatalog.BLACKNUT_ID)
 
     fun forProvider(provider: CloudProvider): CloudProviderAdapter =
         when (provider.id) {
             ProviderCatalog.XBOX_CLOUD_ID -> xbox
             ProviderCatalog.GEFORCE_NOW_ID -> geforceNow
+            ProviderCatalog.BOOSTEROID_ID -> boosteroid
+            ProviderCatalog.BLACKNUT_ID -> blacknut
             else -> external
         }
 }

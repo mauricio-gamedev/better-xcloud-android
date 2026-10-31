@@ -31,7 +31,6 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         window.statusBarColor = backgroundColor
         window.navigationBarColor = backgroundColor
 
@@ -40,7 +39,6 @@ class MainActivity : Activity() {
             setBackgroundColor(backgroundColor)
             setPadding(dp(20), dp(28), dp(20), dp(24))
         }
-
         val scroll = ScrollView(this).apply {
             isFillViewport = true
             clipToPadding = false
@@ -51,12 +49,7 @@ class MainActivity : Activity() {
             window.setDecorFitsSystemWindows(false)
             scroll.setOnApplyWindowInsetsListener { _, insets ->
                 val bars = insets.getInsets(WindowInsets.Type.systemBars())
-                page.setPadding(
-                    dp(20),
-                    bars.top + dp(24),
-                    dp(20),
-                    bars.bottom + dp(24)
-                )
+                page.setPadding(dp(20), bars.top + dp(24), dp(20), bars.bottom + dp(24))
                 insets
             }
         }
@@ -93,30 +86,22 @@ class MainActivity : Activity() {
         filters.addView(filterButton("Todos", GameFilter.ALL), wrapMargins())
         page.addView(filters, withMargins(bottom = 12))
 
-        gamesContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-        }
+        gamesContainer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         page.addView(gamesContainer, matchWidth())
         renderGames()
 
-        page.addView(
-            textView("SERVIÇOS", 12f, accentColor, bold = true),
-            withMargins(top = 18, bottom = 12)
-        )
-
+        page.addView(textView("SERVIÇOS", 12f, accentColor, bold = true), withMargins(top = 18, bottom = 12))
         ProviderCatalog.all.forEach { provider ->
             page.addView(createProviderCard(provider), withMargins(bottom = 12))
         }
-
         page.addView(
             textView(
-                "Protótipo 0.4.0 • Xbox e GeForce NOW em player WebView experimental; outros serviços seguem externos.",
+                "Protótipo 0.4.1 • Xbox, GeForce NOW, Boosteroid e Blacknut com players internos experimentais.",
                 12f,
                 secondaryTextColor
             ),
             withMargins(top = 10)
         )
-
         setContentView(scroll)
     }
 
@@ -148,7 +133,6 @@ class MainActivity : Activity() {
     private fun renderGames() {
         gamesContainer.removeAllViews()
         val games = GameCatalog.filtered(selectedGameFilter)
-
         if (games.isEmpty()) {
             gamesContainer.addView(
                 textView(
@@ -167,16 +151,9 @@ class MainActivity : Activity() {
                 setPadding(dp(16), dp(15), dp(16), dp(14))
                 background = roundedBackground(cardColor, dp(18).toFloat())
             }
-
             card.addView(textView(game.title, 18f, primaryTextColor, bold = true), matchWidth())
-            card.addView(
-                textView(game.accessType.displayName, 11f, accentColor, bold = true),
-                withMargins(top = 5)
-            )
-            card.addView(
-                textView(game.description, 13f, secondaryTextColor),
-                withMargins(top = 5, bottom = 10)
-            )
+            card.addView(textView(game.accessType.displayName, 11f, accentColor, bold = true), withMargins(top = 5))
+            card.addView(textView(game.description, 13f, secondaryTextColor), withMargins(top = 5, bottom = 10))
 
             game.providerLaunchUrls.forEach { (providerId, launchUrl) ->
                 val provider = ProviderCatalog.findById(providerId) ?: return@forEach
@@ -196,16 +173,9 @@ class MainActivity : Activity() {
                 }
                 card.addView(openButton, withMargins(top = 4))
             }
-
-            card.addView(
-                textView("Verificação: ${game.verifiedOn}", 10f, secondaryTextColor),
-                withMargins(top = 8)
-            )
+            card.addView(textView("Verificação: ${game.verifiedOn}", 10f, secondaryTextColor), withMargins(top = 8))
             if (game.availabilityNote.isNotBlank()) {
-                card.addView(
-                    textView(game.availabilityNote, 10f, secondaryTextColor),
-                    withMargins(top = 4)
-                )
+                card.addView(textView(game.availabilityNote, 10f, secondaryTextColor), withMargins(top = 4))
             }
             gamesContainer.addView(card, withMargins(bottom = 12))
         }
@@ -217,16 +187,13 @@ class MainActivity : Activity() {
             setPadding(dp(16), dp(16), dp(16), dp(14))
             background = roundedBackground(cardColor, dp(18).toFloat())
         }
-
         card.addView(textView(provider.name, 18f, primaryTextColor, bold = true), matchWidth())
         card.addView(textView(provider.description, 13f, secondaryTextColor), withMargins(top = 6))
-
         val integrationLabel = when (provider.integrationStage) {
             ProviderIntegrationStage.EXPERIMENTAL_IN_APP -> "IN-APP • EXPERIMENTAL"
             ProviderIntegrationStage.EXTERNAL_HANDOFF -> "ACESSO EXTERNO"
         }
         card.addView(textView(integrationLabel, 10f, accentColor, bold = true), withMargins(top = 12))
-
         card.addView(
             textView(provider.accessModel.displayName, 12f, primaryTextColor, bold = true),
             withMargins(top = 8)
@@ -237,7 +204,9 @@ class MainActivity : Activity() {
         val button = Button(this).apply {
             text = when (provider.id) {
                 ProviderCatalog.XBOX_CLOUD_ID -> "Abrir Xbox Cloud"
-                ProviderCatalog.GEFORCE_NOW_ID -> "Testar player interno"
+                ProviderCatalog.GEFORCE_NOW_ID,
+                ProviderCatalog.BOOSTEROID_ID,
+                ProviderCatalog.BLACKNUT_ID -> "Testar player interno"
                 else -> "Abrir serviço"
             }
             isAllCaps = false
@@ -252,19 +221,15 @@ class MainActivity : Activity() {
         return card
     }
 
-    private fun textView(
-        value: String,
-        sizeSp: Float,
-        color: Int,
-        bold: Boolean = false
-    ): TextView = TextView(this).apply {
-        text = value
-        textSize = sizeSp
-        setTextColor(color)
-        gravity = Gravity.START
-        includeFontPadding = false
-        if (bold) setTypeface(typeface, Typeface.BOLD)
-    }
+    private fun textView(value: String, sizeSp: Float, color: Int, bold: Boolean = false): TextView =
+        TextView(this).apply {
+            text = value
+            textSize = sizeSp
+            setTextColor(color)
+            gravity = Gravity.START
+            includeFontPadding = false
+            if (bold) setTypeface(typeface, Typeface.BOLD)
+        }
 
     private fun roundedBackground(color: Int, radius: Float): GradientDrawable =
         GradientDrawable().apply {
@@ -273,32 +238,18 @@ class MainActivity : Activity() {
             setStroke(dp(1), Color.rgb(43, 53, 79))
         }
 
-    private fun dp(value: Int): Int =
-        (value * resources.displayMetrics.density).toInt()
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     private fun matchWidth(): LinearLayout.LayoutParams =
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
     private fun wrapMargins(end: Int = 0): LinearLayout.LayoutParams =
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             marginEnd = dp(end)
         }
 
-    private fun withMargins(
-        top: Int = 0,
-        bottom: Int = 0,
-        end: Int = 0
-    ): LinearLayout.LayoutParams =
-        LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
+    private fun withMargins(top: Int = 0, bottom: Int = 0, end: Int = 0): LinearLayout.LayoutParams =
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             topMargin = dp(top)
             bottomMargin = dp(bottom)
             marginEnd = dp(end)

@@ -41,27 +41,33 @@ class ProviderCatalogTest {
     }
 
     @Test
-    fun geforceNowUsesTheExperimentalInAppAdapterStage() {
-        assertEquals(
-            ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
-            ProviderCatalog.findById(ProviderCatalog.GEFORCE_NOW_ID)?.integrationStage
-        )
+    fun browserPlayerProvidersAreMarkedExperimental() {
+        listOf(
+            ProviderCatalog.GEFORCE_NOW_ID,
+            ProviderCatalog.BOOSTEROID_ID,
+            ProviderCatalog.BLACKNUT_ID
+        ).forEach { id ->
+            assertEquals(
+                ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
+                ProviderCatalog.findById(id)?.integrationStage
+            )
+        }
     }
 
     @Test
     fun paidProvidersAreNotMislabelledAsFree() {
         assertEquals(
             ProviderAccessModel.PAID_SUBSCRIPTION,
-            ProviderCatalog.findById("boosteroid")?.accessModel
+            ProviderCatalog.findById(ProviderCatalog.BOOSTEROID_ID)?.accessModel
         )
         assertEquals(
             ProviderAccessModel.PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE,
-            ProviderCatalog.findById("blacknut")?.accessModel
+            ProviderCatalog.findById(ProviderCatalog.BLACKNUT_ID)?.accessModel
         )
     }
 
     @Test
     fun findByIdReturnsTheMatchingProvider() {
-        assertNotNull(ProviderCatalog.findById("xbox-cloud"))
+        assertNotNull(ProviderCatalog.findById(ProviderCatalog.XBOX_CLOUD_ID))
     }
 }

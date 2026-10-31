@@ -5,6 +5,8 @@ import java.net.URI
 object ProviderCatalog {
     const val XBOX_CLOUD_ID = "xbox-cloud"
     const val GEFORCE_NOW_ID = "geforce-now"
+    const val BOOSTEROID_ID = "boosteroid"
+    const val BLACKNUT_ID = "blacknut"
 
     val all: List<CloudProvider> = listOf(
         CloudProvider(
@@ -28,24 +30,24 @@ object ProviderCatalog {
             integrationNote = "Player WebView interno experimental baseado no site oficial. Chrome Android é suportado pela NVIDIA; WebView embutido ainda precisa de validação no A06."
         ),
         CloudProvider(
-            id = "boosteroid",
+            id = BOOSTEROID_ID,
             name = "Boosteroid",
             description = "Acesse sua biblioteca de jogos de PC por streaming.",
             launchUrl = "https://boosteroid.com/",
-            integrationStage = ProviderIntegrationStage.EXTERNAL_HANDOFF,
+            integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.PAID_SUBSCRIPTION,
             accessNote = "Requer assinatura ativa. Os jogos podem exigir compra separada em uma loja compatível.",
-            integrationNote = "Abertura externa; integração interna não implementada."
+            integrationNote = "Player WebView experimental. O serviço publica requisitos para navegador Android; incorporação no WebView precisa de validação no A06."
         ),
         CloudProvider(
-            id = "blacknut",
+            id = BLACKNUT_ID,
             name = "Blacknut",
             description = "Biblioteca de jogos por streaming em uma única assinatura.",
-            launchUrl = "https://www.blacknut.com/pt-br",
-            integrationStage = ProviderIntegrationStage.EXTERNAL_HANDOFF,
+            launchUrl = "https://app.blacknut.com/",
+            integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE,
             accessNote = "Requer assinatura; períodos de teste podem variar por país e oferta.",
-            integrationNote = "Abertura externa; integração interna não implementada."
+            integrationNote = "Aplicativo web oficial aberto no player interno experimental; autenticação e streaming precisam de validação no A06."
         )
     )
 
@@ -53,7 +55,6 @@ object ProviderCatalog {
         require(all.map { it.id }.distinct().size == all.size) {
             "Provider IDs must be unique."
         }
-
         all.forEach { provider ->
             val uri = URI(provider.launchUrl)
             require(uri.scheme == "https" && !uri.host.isNullOrBlank()) {

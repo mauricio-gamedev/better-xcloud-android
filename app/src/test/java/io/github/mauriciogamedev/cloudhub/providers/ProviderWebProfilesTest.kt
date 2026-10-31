@@ -8,32 +8,46 @@ import org.junit.Test
 
 class ProviderWebProfilesTest {
     @Test
-    fun geforceNowProfileAllowsOfficialServiceAndAuthenticationHosts() {
-        val profile = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)
-        assertNotNull(profile)
-        assertTrue(profile!!.allows(URI("https://play.geforcenow.com/")))
-        assertTrue(profile.allows(URI("https://login.nvidia.com/")))
-        assertTrue(profile.allows(URI("https://store.steampowered.com/")))
+    fun eachWebProviderAllowsItsOfficialEntryPoint() {
+        ProviderWebProfiles.experimentalProviders.forEach { profile ->
+            assertTrue(profile.providerId, profile.allows(URI(profile.entryUrl)))
+        }
     }
 
     @Test
-    fun profileRejectsLookalikeDomainsAndUnlistedHosts() {
-        val profile = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!
-        assertFalse(profile.allows(URI("https://geforcenow.com.attacker.example/")))
-        assertFalse(profile.allows(URI("https://example.com/")))
+    fun serviceProfilesAllowTheirOwnAuthenticationAndStoreDomains() {
+        val gfn = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!
+        val boosteroid = ProviderWebProfiles.forProvider(ProviderCatalog.BOOSTEROID_ID)!!
+        val blacknut = ProviderWebProfiles.forProvider(ProviderCatalog.BLACKNUT_ID)!!
+
+        assertTrue(gfn.allows(URI("https://login.nvidia.com/")))
+        assertTrue(gfn.allows(URI("https://store.steampowered.com/")))
+        assertTrue(boosteroid.allows(URI("https://accounts.google.com/")))
+        assertTrue(blacknut.allows(URI("https://profile.blacknut.com/")))
     }
 
     @Test
-    fun profileRejectsCleartextAndCredentialsInUrl() {
-        val profile = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!
-        assertFalse(profile.allows(URI("http://play.geforcenow.com/")))
-        assertFalse(profile.allows(URI("https://user:pass@play.geforcenow.com/")))
+    fun profilesRejectLookalikeDomainsAndUnlistedHosts() {
+        ProviderWebProfiles.experimentalProviders.forEach { profile ->
+            val host = URI(profile.entryUrl).host
+            assertFalse(profile.providerId, profile.allows(URI("https://${host}.attacker.example/")))
+        }
+        assertFalse(ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!.allows(
+            URI("https://example.com/")
+        ))
     }
 
     @Test
-    fun onlyProvidersWithAnExplicitWebProfileAreReturned() {
+    fun profilesRejectCleartextAndCredentialsInUrl() {
+        val gfn = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!
+        assertFalse(gfn.allows(URI("http://play.geforcenow.com/")))
+        assertFalse(gfn.allows(URI("https://user:pass@play.geforcenow.com/")))
+    }
+
+    @Test
+    fun unknownProvidersHaveNoEmbeddedProfile() {
         assertNotNull(ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID))
-        assertTrue(ProviderWebProfiles.forProvider("boosteroid") == null)
-        assertTrue(ProviderWebProfiles.forProvider("blacknut") == null)
+        assertTrue(ProviderWebProfiles.forProvider("other-cloud") == null)
+        assertTrue(ProviderWebProfiles.experimentalProviders.size == 3)
     }
 }
