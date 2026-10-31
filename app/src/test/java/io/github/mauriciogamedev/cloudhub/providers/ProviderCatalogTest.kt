@@ -29,6 +29,30 @@ class ProviderCatalogTest {
     }
 
     @Test
+    fun xboxAndGeForceNowExposeFreeAccessOptions() {
+        assertEquals(
+            ProviderAccessModel.FREE_GAMES_WITH_FREE_ACCOUNT,
+            ProviderCatalog.findById(ProviderCatalog.XBOX_CLOUD_ID)?.accessModel
+        )
+        assertEquals(
+            ProviderAccessModel.FREE_TIER_AVAILABLE,
+            ProviderCatalog.findById(ProviderCatalog.GEFORCE_NOW_ID)?.accessModel
+        )
+    }
+
+    @Test
+    fun paidProvidersAreNotMislabelledAsFree() {
+        assertEquals(
+            ProviderAccessModel.PAID_SUBSCRIPTION,
+            ProviderCatalog.findById("boosteroid")?.accessModel
+        )
+        assertEquals(
+            ProviderAccessModel.PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE,
+            ProviderCatalog.findById("blacknut")?.accessModel
+        )
+    }
+
+    @Test
     fun findByIdReturnsTheMatchingProvider() {
         assertNotNull(ProviderCatalog.findById("xbox-cloud"))
     }
