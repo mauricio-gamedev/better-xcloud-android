@@ -20,5 +20,6 @@ data class CloudGame(
     val accessType: GameAccessType,
     val providerLaunchUrls: Map<String, String>,
     val sourceUrls: List<String>,
-    val verifiedOn: String
+    val verifiedOn: String,
+    val availabilityNote: String = ""
 )
