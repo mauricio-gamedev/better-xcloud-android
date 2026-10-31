@@ -9,11 +9,11 @@ enum class ProviderIntegrationStage {
  * Describes the cost of accessing the streaming service itself.
  * This is intentionally separate from whether an individual game is free.
  */
-enum class ProviderAccessModel {
-    FREE_GAMES_WITH_FREE_ACCOUNT,
-    FREE_TIER_AVAILABLE,
-    PAID_SUBSCRIPTION,
-    PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE
+enum class ProviderAccessModel(val displayName: String) {
+    FREE_GAMES_WITH_FREE_ACCOUNT("ACESSO GRÁTIS A TÍTULOS SELECIONADOS"),
+    FREE_TIER_AVAILABLE("PLANO GRATUITO DISPONÍVEL"),
+    PAID_SUBSCRIPTION("ASSINATURA PAGA"),
+    PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE("ASSINATURA • TESTE PODE VARIAR")
 }
 
 data class CloudProvider(
