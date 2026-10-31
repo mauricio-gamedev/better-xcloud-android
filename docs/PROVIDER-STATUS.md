@@ -32,8 +32,9 @@ O custo do jogo é separado do custo do serviço:
 
 ## O que está efetivamente implementado
 
-- Xbox: userscript Better xCloud incluído no APK e configurado para injeção no início de documentos da origem Xbox. A integração é experimental até testes no dispositivo.
-- GeForce NOW, Boosteroid e Blacknut: o app abre a URL HTTPS oficial. Não existe streaming incorporado nesses três módulos.
+- Xbox: userscript Better xCloud incluído no APK e configurado para injeção no início de documentos da origem Xbox. Fortnite agora usa a rota de produto Xbox `BT5P2X999VH2`, abrindo a página do título dentro da Activity; ainda é necessário login Microsoft e confirmar Jogar. A integração é experimental até testes no dispositivo.
+- GeForce NOW: os botões atuais abrem o catálogo geral, não iniciam o jogo selecionado. A NVIDIA documenta deep links com IDs por jogo, mas a especificação pública limita navegadores suportados a desktop e descreve a abertura da página de detalhes, não início automático da sessão. A integração interna Android ainda não está implementada.
+- Boosteroid e Blacknut: o app abre a URL HTTPS oficial. Não existe streaming incorporado nesses módulos.
 - Os registros de jogo guardam links de preço e compatibilidade; a disponibilidade é revalidada no serviço antes de jogar.
 
 ## Testes pendentes no Galaxy A06
