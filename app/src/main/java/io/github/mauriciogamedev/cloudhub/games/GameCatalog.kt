@@ -5,7 +5,10 @@ import java.net.URI
 
 object GameCatalog {
     private const val GFN_URL = "https://play.geforcenow.com/"
+    // Regional directory's visible snapshot is dated 2026-09-13; provider catalogues can change.
     private const val GFN_BRAZIL_CATALOG = "https://games.akillibrasil.com/lista-de-jogos-geforce-now/"
+    private const val GFN_REGION_NOTE =
+        "GeForce NOW Brasil: listado no snapshot regional de 13/09/2026. A disponibilidade pode mudar; confirme no serviço antes de jogar."
 
     val all: List<CloudGame> = listOf(
         CloudGame(
@@ -22,7 +25,8 @@ object GameCatalog {
                 "https://www.fortnite.com/mobile/xbox-cloud-gaming?lang=pt-BR",
                 "https://www.fortnite.com/mobile/geforce-now?lang=pt-BR"
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = "Xbox Cloud: título gratuito selecionado. GeForce NOW: confirme a disponibilidade no catálogo atual."
         ),
         CloudGame(
             id = "apex-legends",
@@ -35,7 +39,8 @@ object GameCatalog {
                 "https://play.google.com/store/apps/details?id=com.nvidia.geforcenow&hl=pt&gl=BR",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "destiny-2",
@@ -48,7 +53,8 @@ object GameCatalog {
                 "https://play.google.com/store/apps/details?id=com.nvidia.geforcenow&hl=pt&gl=BR",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "rocket-league",
@@ -60,7 +66,8 @@ object GameCatalog {
                 "https://store.epicgames.com/p/rocket-league?lang=pt-BR",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "genshin-impact",
@@ -72,7 +79,8 @@ object GameCatalog {
                 "https://store.epicgames.com/p/genshin-impact?lang=pt-BR",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "honkai-star-rail",
@@ -84,7 +92,8 @@ object GameCatalog {
                 "https://store.epicgames.com/pt-BR/p/honkai-star-rail",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "wuthering-waves",
@@ -96,7 +105,8 @@ object GameCatalog {
                 "https://store.epicgames.com/p/wuthering-waves-76ebc5?lang=pt-BR",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "zenless-zone-zero",
@@ -108,7 +118,8 @@ object GameCatalog {
                 "https://store.epicgames.com/p/zenless-zone-zero-faq-b735dd?lang=pt",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "marvel-rivals",
@@ -120,7 +131,8 @@ object GameCatalog {
                 "https://store.steampowered.com/app/2767030/Marvel_Rivals/?l=brazilian",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "counter-strike-2",
@@ -132,7 +144,8 @@ object GameCatalog {
                 "https://store.steampowered.com/app/730/CounterStrike2/",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "warframe",
@@ -144,7 +157,8 @@ object GameCatalog {
                 "https://store.steampowered.com/app/230410/Warframe/?l=brazilian",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         ),
         CloudGame(
             id = "dota-2",
@@ -156,7 +170,8 @@ object GameCatalog {
                 "https://store.steampowered.com/app/570/Dota_2/?cc=br&l=brazilian",
                 GFN_BRAZIL_CATALOG
             ),
-            verifiedOn = "2026-10-31"
+            verifiedOn = "2026-10-31",
+            availabilityNote = GFN_REGION_NOTE
         )
     )
 
