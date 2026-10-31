@@ -1,49 +1,37 @@
 # Estado dos provedores
 
-| Provedor | Acesso gratuito | Estado de integração | Observações |
+| Provedor | Modelo de acesso | Integração Cloud Hub | Estado |
 | --- | --- | --- | --- |
-| Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita | WebView experimental + Better xCloud 6.7.12 | Fortnite é o título grátis confirmado neste catálogo; a biblioteca maior exige plano elegível |
-| GeForce NOW Powered by ABYA | Membership gratuita no Brasil | Acesso externo | ABYA confirma plano sem método de pagamento e 75+ F2P; app oficial lista 100+ F2P; sessões/fila podem ter limites |
-| Boosteroid | Não há plano grátis padrão confirmado neste projeto | Acesso externo | Assinatura paga; compra do jogo pode ser necessária |
-| Blacknut | Teste pode existir em ofertas/regiões específicas | Acesso externo | Catálogo principal exige assinatura |
+| Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita | WebView própria + Better xCloud 6.7.12 | Experimental; login e streaming aguardam validação no A06 |
+| GeForce NOW Powered by ABYA | Membership gratuita no Brasil, com limites | Player WebView interno | Experimental; catálogo geral, integração precisa de teste |
+| Boosteroid | Assinatura paga | Player WebView interno | Experimental; Chrome/WebRTC Android é documentado, WebView não está certificada |
+| Blacknut | Assinatura; teste pode variar | Aplicativo web oficial no player interno | Experimental; login, controle e streaming aguardam validação |
 
-## Catálogo de jogos
+## Catálogo free-first
 
-O catálogo free-first inicial contém 12 jogos:
-- Fortnite (Xbox Cloud + GeForce NOW)
-- Apex Legends
-- Destiny 2
-- Rocket League
-- Genshin Impact
-- Honkai: Star Rail
-- Wuthering Waves
-- Zenless Zone Zero
-- Marvel Rivals
-- Counter-Strike 2
-- Warframe
-- Dota 2
+O catálogo inicial contém 12 jogos free-to-play: Fortnite, Apex Legends, Destiny 2, Rocket League, Genshin Impact, Honkai: Star Rail, Wuthering Waves, Zenless Zone Zero, Marvel Rivals, Counter-Strike 2, Warframe e Dota 2.
 
-Fortnite é o único dos 12 com acesso gratuito verificado nos dois provedores. Os outros 11 usam GeForce NOW. A compatibilidade regional dos 11 foi conferida no diretório regional do GeForce NOW Brasil, cujo snapshot visível está datado de 13/09/2026; a disponibilidade pode mudar. O usuário deve confirmar o jogo na biblioteca do serviço antes de iniciar.
+Fortnite é o único com acesso grátis verificado nos dois provedores do catálogo; os outros 11 estão associados ao GeForce NOW por uma verificação regional brasileira com snapshot de 13/09/2026. A disponibilidade muda e deve ser confirmada dentro do serviço. Jogo free-to-play não significa que todo plano do serviço garante acesso imediato.
 
-O custo do jogo é separado do custo do serviço:
-- Um jogo F2P ainda pode ter itens opcionais pagos.
-- Uma membership Free não torna todos os jogos do GeForce NOW gratuitos.
-- Títulos pagos ou incluídos em assinatura não entram no filtro "Só grátis".
+## Implementado
 
-## O que está efetivamente implementado
+- Xbox: Better xCloud é injetado no início da origem Xbox. Fortnite abre a rota de produto `BT5P2X999VH2`; login e confirmação de Jogar continuam sob controle do Xbox.
+- GeForce NOW: adaptador próprio abre `https://play.geforcenow.com/` no player interno. O usuário seleciona o jogo no catálogo do serviço; não há deep link por título verificado neste app.
+- Boosteroid: adaptador próprio abre a homepage oficial no player interno. Requisitos oficiais de navegador Android incluem Chrome atualizado, WebRTC e decodificação H.264; o WebView do Cloud Hub ainda precisa ser validado.
+- Blacknut: adaptador próprio abre o app web oficial `https://app.blacknut.com/`. A compatibilidade do WebView embutido ainda precisa ser validada.
+- Os três players web compartilham a Activity, mas cada um tem uma allowlist de hosts e URL inicial separadas.
+- Se a WebView não funcionar, o usuário pode abrir a página no navegador ou app oficial, quando disponível.
 
-- Xbox: userscript Better xCloud incluído no APK e configurado para injeção no início de documentos da origem Xbox. Fortnite agora usa a rota de produto Xbox `BT5P2X999VH2`, abrindo a página do título dentro da Activity; ainda é necessário login Microsoft e confirmar Jogar. A integração é experimental até testes no dispositivo.
-- GeForce NOW: os botões atuais abrem o catálogo geral, não iniciam o jogo selecionado. A NVIDIA documenta deep links com IDs por jogo, mas a especificação pública limita navegadores suportados a desktop e descreve a abertura da página de detalhes, não início automático da sessão. A integração interna Android ainda não está implementada.
-- Boosteroid e Blacknut: o app abre a URL HTTPS oficial. Não existe streaming incorporado nesses módulos.
-- Os registros de jogo guardam links de preço e compatibilidade; a disponibilidade é revalidada no serviço antes de jogar.
+## Limites técnicos
+
+Suporte a Chrome Android não implica certificação de Android WebView. Nenhum player contorna autenticação, DRM, fila, planos, limites regionais ou posse do jogo. O app oficial do serviço pode ser necessário para controles, determinados tipos de jogo ou recursos nativos.
 
 ## Testes pendentes no Galaxy A06
 
-- Login Microsoft, incluindo redirecionamento de autenticação.
-- Início e término de sessão.
-- Áudio, toque e controle Bluetooth.
-- Rotação, botão voltar e retomada.
-- Uso de RAM e comportamento quando o Android encerra o processo do WebView.
-- Fallback em versões do WebView sem `DOCUMENT_START_SCRIPT`.
+- Xbox: login, retorno de autenticação, início/fim de sessão, áudio, toque e controle Bluetooth.
+- GeForce NOW: login, catálogo, seleção, sessão, áudio, controle, fullscreen e retorno.
+- Boosteroid: autenticação, catálogo, controles compatíveis, WebRTC, decodificação e vídeo.
+- Blacknut: login, catálogo, emparelhamento de controle, vídeo, áudio e sessão.
+- Todos: rotação, retomada, renderer encerrado, fallback, consumo de RAM e estabilidade após várias partidas.
 
-Nenhuma integração deve ser marcada como estável antes desses testes.
+Nenhum player será marcado como estável antes dos testes em aparelho físico.
