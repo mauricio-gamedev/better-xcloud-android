@@ -4,74 +4,56 @@
 
 Aplicativo Android multi-provider para descobrir jogos, priorizar opções gratuitas e abrir serviços de cloud gaming. Cada provedor possui um adaptador e uma política de navegação próprios.
 
-## Camadas
+## Adaptadores
 
-### Android app
-- Interface nativa em Kotlin.
-- Catálogo free-first com custo do jogo separado do custo do serviço.
-- Registry de adaptadores por provedor.
-- Xbox com WebView dedicada e userscript Better xCloud.
-- GeForce NOW, Boosteroid e Blacknut com player WebView interno experimental e perfis independentes.
-- Fallback externo para quando um serviço não aceitar a WebView ou exigir o aplicativo oficial.
-
-### Catálogo de jogos
-
-Os tipos de custo do jogo são `FREE_TO_PLAY`, `FREE_PROMOTION`, `SUBSCRIPTION_INCLUDED`, `PAID_PURCHASE` e `UNKNOWN`. O filtro "Só grátis" inclui apenas as duas primeiras categorias. O catálogo inicial tem 12 títulos free-to-play; disponibilidade regional e catálogo dos serviços podem mudar.
-
-Cada registro guarda URLs por provedor, fontes de verificação, data de conferência e observações regionais. Não inferir compatibilidade cloud apenas por um jogo ser gratuito na loja.
-
-## Adaptadores de provedores
-
-`ProviderAdapterRegistry` escolhe a estratégia pelo ID:
-- Xbox: `XboxCloudProviderAdapter` abre `XboxCloudActivity`.
-- GeForce NOW, Boosteroid e Blacknut: `EmbeddedWebProviderAdapter` abre `CloudPlayerActivity` com um `ProviderWebProfile` próprio.
-- Provedores sem player implementado usam `ExternalLinkProviderAdapter`.
-
-O adaptador concentra requisitos do serviço: URL inicial, domínios confiáveis, autenticação e fallback. Um serviço só será marcado como estável após validar o fluxo real de streaming.
-
-## Player interno
-
-`ProviderWebProfiles` define para cada serviço URL de entrada e allowlist HTTPS. Hosts externos são encaminhados ao navegador do sistema; esquemas não HTTPS desconhecidos são bloqueados. Cookies de terceiros são habilitados na sessão WebView para autenticação federada. Nenhuma bridge JavaScript nativa é exposta.
-
-`CloudPlayerActivity` cria uma única WebView sob demanda, oferece voltar/recarga/abertura externa, progresso, fullscreen e recuperação após encerramento do renderer. O título solicitado é mostrado como contexto, mas não é tratado como deep link quando o serviço não fornece um alvo específico verificado.
-
-### GeForce NOW
-
-A NVIDIA documenta streaming em dispositivos Android pelo Chrome em `play.geforcenow.com`. A incorporação Android WebView do Cloud Hub não é explicitamente certificada e permanece experimental. O player abre o catálogo geral; o usuário escolhe o jogo dentro do serviço.
-
-### Boosteroid
-
-O Boosteroid publica requisitos para telefone Android e navegador, incluindo Chrome atualizado, WebRTC e decodificação H.264 por hardware. O Cloud Hub abre a página oficial no player, mas a compatibilidade WebView, login e streaming precisam de teste físico. Alguns jogos sem suporte a controle podem exigir o app Android oficial ou periféricos adicionais.
-
-### Blacknut
-
-A Blacknut oferece um aplicativo web oficial em `https://app.blacknut.com/` para navegadores compatíveis. O Cloud Hub usa esse endereço no player interno como experimento; login, controles e vídeo precisam de validação no Galaxy A06.
+- Xbox: `XboxCloudProviderAdapter` abre `XboxCloudActivity` com o userscript Better xCloud 6.7.12.
+- GeForce NOW, Boosteroid e Blacknut: `EmbeddedWebProviderAdapter` abre `CloudPlayerActivity` com `ProviderWebProfile` dedicado.
+- Steam Link: `SteamLinkProviderAdapter` abre o app oficial Valve instalado, ou o Google Play quando não estiver instalado.
+- Outros provedores usam `ExternalLinkProviderAdapter`.
 
 ## Xbox / Better xCloud
 
-O userscript público Better xCloud 6.7.12 é empacotado localmente no APK, fixado no commit upstream `f8397043f6d2148d2345d508902a38c69cf1ee20`, blob `05ad4c1e2d31caaaeaa2bcf3b7bd06d3c0f76a0f`.
+O userscript upstream permanece fixado em `f8397043f6d2148d2345d508902a38c69cf1ee20` (6.7.12). O script é injetado em document-start apenas no frame principal da origem Xbox; nenhuma bridge JavaScript nativa é exposta.
 
-`XboxCloudActivity` verifica `WebViewFeature.DOCUMENT_START_SCRIPT`, injeta o userscript apenas na origem Xbox e impede inicialização em iframes. Login Microsoft e início de sessão continuam no fluxo oficial. Não há bridge `addJavascriptInterface`.
+As preferências do painel nativo são persistidas em SharedPreferences e copiadas, no document-start, para os objetos de armazenamento local usados pelo Better xCloud:
+- `BetterXcloud`: disponibilidade, opacidade e estilo dos controles touch, resolução alvo;
+- `BetterXcloud.Stream`: estatísticas durante a sessão.
 
-## Segurança
+A injeção preserva as outras chaves já existentes nesses objetos. O painel usa opções já implementadas pelo Better xCloud e não adiciona uma camada falsa de gamepad. O catálogo de layouts touch personalizados continua sob controle do Better xCloud e de seus contribuidores.
 
-- Tráfego cleartext HTTP desativado.
-- Safe Browsing ativo quando suportado.
-- Acesso a arquivos locais desativado nas WebViews.
-- Mixed content bloqueado.
-- Hosts de navegação principal controlados por perfil.
-- URLs HTTPS fora da allowlist são abertas externamente.
-- O app não captura nem armazena senhas ou tokens.
-- Não contornar DRM, fila, assinatura, região ou posse de jogos.
+### Perfil inicial para Galaxy A06
 
-## Galaxy A06
+720p, controles touch disponíveis para todos os jogos, opacidade de 80%, estilo padrão e estatísticas desativadas. O usuário pode alterar resolução, opacidade, estilo e disponibilidade. Nenhum bitrate/FPS é forçado pelo Cloud Hub.
 
-- Criar apenas uma WebView quando o usuário abrir um serviço.
-- Não manter players ocultos em segundo plano.
-- Pausar e destruir WebView conforme o ciclo de vida.
-- Não forçar WebGPU, filtros, resolução, bitrate ou FPS.
-- Medir RAM, temperatura, latência, estabilidade, áudio e controle no aparelho real.
+A atividade Xbox usa immersive fullscreen e deixa o WebView ocupar a tela inteira; os insets da barra lateral do Android não são aplicados como padding ao vídeo. As barras do sistema podem ser reveladas temporariamente por gesto.
 
-## Critérios de estabilidade
+## Player web / GeForce NOW
 
-Para cada provedor, validar login, redirecionamentos, seleção e início/fim de jogo, áudio, controles Bluetooth, toque, fullscreen, rotação, retorno, retomada, consumo de RAM e recuperação do renderer. Até completar os testes, a integração permanece experimental.
+A `CloudPlayerActivity` compartilha o shell de navegação, cookies, progresso, fullscreen, ciclo de vida e recuperação do renderer. GFN usa um perfil que remove os marcadores `wv` e `Version/4.0` do user-agent, como experimento de compatibilidade. O perfil não altera os outros serviços. Console JS e erros HTTP de navegação principal são registrados para diagnóstico.
+
+O player interno permanece experimental: suporte a Chrome Android não certifica Android WebView. O atalho APP abre `com.nvidia.geforcenow` ou a página oficial da Play Store. A autenticação e a sessão continuam sob controle do serviço.
+
+## Steam Link e Steam Cloud
+
+Steam Link é um cliente externo oficial para transmitir do PC anfitrião para Android. O PC deve executar Steam e o jogo; a rede recomendada é PC por Ethernet e telefone em Wi-Fi de 5 GHz.
+
+Steam Cloud sincroniza saves/configurações, mas não é um serviço de streaming nem um servidor que executa jogos. Os arquivos locais de um título não bastam para reproduzir um jogo Windows no A06.
+
+Um host próprio futuro pode usar um PC compatível com Sunshine como servidor e Moonlight como cliente Android, sujeito a validação de encoder, rede, controles e segurança. Isso ainda não está implementado no Cloud Hub.
+
+## Catálogo e disponibilidade
+
+Custo de jogo e custo de serviço são dimensões separadas. O catálogo só deve incorporar jogos com fontes por provedor/mercado e data de verificação. Catálogo de outra região não deve ser tratado como automaticamente disponível no Brasil. Classificação etária, licenças, entitlement, loja e plano podem alterar a disponibilidade.
+
+## Segurança e limites
+
+- HTTP cleartext e mixed content bloqueados.
+- Cada WebView tem allowlist HTTPS própria.
+- Sem `addJavascriptInterface` genérico.
+- Sem captura de credenciais/tokens.
+- Não contornar DRM, fila, plano, região ou verificação de posse.
+- Não forçar WebGPU, codec, resolução maior, bitrate ou FPS no A06.
+
+## Validação física
+
+No A06, validar login, seleção e início/fim de sessão, áudio, touch e controles Bluetooth, fullscreen, rotação, retomada, uso de RAM, renderer encerrado, estabilidade em partidas longas e comportamento após várias entradas/saídas. Players WebView só podem ser marcados como estáveis depois desses testes.

@@ -19,11 +19,26 @@ class ProviderWebProfilesTest {
         val gfn = ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)!!
         val boosteroid = ProviderWebProfiles.forProvider(ProviderCatalog.BOOSTEROID_ID)!!
         val blacknut = ProviderWebProfiles.forProvider(ProviderCatalog.BLACKNUT_ID)!!
-
         assertTrue(gfn.allows(URI("https://login.nvidia.com/")))
         assertTrue(gfn.allows(URI("https://store.steampowered.com/")))
         assertTrue(boosteroid.allows(URI("https://accounts.google.com/")))
         assertTrue(blacknut.allows(URI("https://profile.blacknut.com/")))
+    }
+
+    @Test
+    fun onlyGeForceNowUsesTheAndroidWebViewCompatibilityUserAgent() {
+        assertTrue(
+            ProviderWebProfiles.forProvider(ProviderCatalog.GEFORCE_NOW_ID)
+                ?.normalizeAndroidWebViewUserAgent == true
+        )
+        assertFalse(
+            ProviderWebProfiles.forProvider(ProviderCatalog.BOOSTEROID_ID)
+                ?.normalizeAndroidWebViewUserAgent == true
+        )
+        assertFalse(
+            ProviderWebProfiles.forProvider(ProviderCatalog.BLACKNUT_ID)
+                ?.normalizeAndroidWebViewUserAgent == true
+        )
     }
 
     @Test

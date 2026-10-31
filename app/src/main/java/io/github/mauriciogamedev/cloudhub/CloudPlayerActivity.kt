@@ -6,11 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.webkit.CookieManager
+import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -36,6 +38,8 @@ class CloudPlayerActivity : Activity() {
         private const val TEXT = 0xFFF4F6FF.toInt()
         private const val MUTED = 0xFFB0BAD2.toInt()
         private const val ACCENT = 0xFF8B9CFF.toInt()
+        private const val GFN_PACKAGE = "com.nvidia.geforcenow"
+        private const val TAG = "CloudHub.Player"
     }
 
     private var profile: ProviderWebProfile? = null
@@ -63,7 +67,7 @@ class CloudPlayerActivity : Activity() {
         val requestedUrl = intent.getStringExtra(EXTRA_START_URL) ?: activeProfile.entryUrl
         currentStartUrl = if (activeProfile.allows(requestedUrl)) requestedUrl else activeProfile.entryUrl
         buildShell(activeProfile)
-        createPlayerWebView()
+        createPlayerWebView(activeProfile)
         playerWebView?.loadUrl(currentStartUrl)
     }
 
@@ -76,7 +80,7 @@ class CloudPlayerActivity : Activity() {
         val toolbar = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(8), dp(4), dp(8), dp(4))
+            setPadding(dp(6), dp(3), dp(6), dp(3))
             setBackgroundColor(CARD)
         }
         toolbar.addView(actionButton("‹") {
@@ -87,42 +91,33 @@ class CloudPlayerActivity : Activity() {
         val titleColumn = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(8), 0, dp(4), 0)
+            setPadding(dp(6), 0, dp(4), 0)
         }
         titleColumn.addView(TextView(this).apply {
             text = activeProfile.displayName
             textSize = 14f
             setTextColor(TEXT)
             maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
         })
         val gameTitle = intent.getStringExtra(EXTRA_GAME_TITLE)?.takeIf { it.isNotBlank() }
         titleColumn.addView(TextView(this).apply {
-            text = if (gameTitle == null) "Player interno • experimental"
-            else "Catálogo aberto • procure: " + gameTitle
+            text = gameTitle?.let { "$it • player experimental" } ?: "Player interno • experimental"
             textSize = 10f
             setTextColor(MUTED)
             maxLines = 1
+            ellipsize = android.text.TextUtils.TruncateAt.END
         })
         toolbar.addView(titleColumn, LinearLayout.LayoutParams(0, dp(48), 1f))
         toolbar.addView(actionButton("↻") { playerWebView?.reload() })
+        if (activeProfile.providerId == ProviderWebProfiles.GEFORCE_NOW_ID) {
+            toolbar.addView(actionButton("APP") { openOfficialProviderApp() })
+        }
         toolbar.addView(actionButton("↗") { openExternal(currentStartUrl) })
         content.addView(toolbar, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, dp(56)
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            dp(52)
         ))
-
-        if (gameTitle != null) {
-            content.addView(TextView(this).apply {
-                text = "O serviço será aberto no catálogo. Selecione " + gameTitle +
-                    " dentro do " + activeProfile.displayName + "; o Cloud Hub ainda não possui um deep link Android por jogo verificado."
-                textSize = 11f
-                setTextColor(MUTED)
-                setPadding(dp(12), dp(8), dp(12), dp(8))
-                setBackgroundColor(CARD)
-            }, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ))
-        }
 
         progress = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = 100
@@ -133,7 +128,8 @@ class CloudPlayerActivity : Activity() {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(3)
         ))
         root.addView(content, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
         ))
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -147,7 +143,7 @@ class CloudPlayerActivity : Activity() {
         setContentView(root)
     }
 
-    private fun createPlayerWebView() {
+    private fun createPlayerWebView(activeProfile: ProviderWebProfile) {
         val webView = WebView(this)
         playerWebView = webView
         webView.settings.apply {
@@ -162,7 +158,11 @@ class CloudPlayerActivity : Activity() {
             builtInZoomControls = false
             displayZoomControls = false
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) safeBrowsingEnabled = true
+            if (activeProfile.normalizeAndroidWebViewUserAgent) {
+                userAgentString = userAgentString.replace("; wv", "").replace("Version/4.0 ", "")
+            }
         }
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         CookieManager.getInstance().setAcceptCookie(true)
         CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true)
 
@@ -172,7 +172,12 @@ class CloudPlayerActivity : Activity() {
                 progress.visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
             }
 
-            override fun onShowCustomView(view: View, callback: WebChromeClient.CustomViewCallback) {
+            override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                Log.w(TAG, "${activeProfile.providerId}: ${consoleMessage.message()} (${consoleMessage.sourceId()}:${consoleMessage.lineNumber()})")
+                return true
+            }
+
+            override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                 if (customView != null) {
                     callback.onCustomViewHidden()
                     return
@@ -181,12 +186,10 @@ class CloudPlayerActivity : Activity() {
                 customViewCallback = callback
                 content.visibility = View.GONE
                 root.addView(view, FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
                 ))
-                window.decorView.systemUiVisibility =
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                applyFullscreenFlags()
             }
 
             override fun onHideCustomView() {
@@ -195,25 +198,35 @@ class CloudPlayerActivity : Activity() {
         }
 
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(
-                view: WebView, request: WebResourceRequest
-            ): Boolean = routeNavigation(request.url)
+            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
+                routeNavigation(request.url)
 
             @Suppress("DEPRECATION")
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
                 routeNavigation(Uri.parse(url))
 
-            override fun onPageStarted(
-                view: WebView, url: String, favicon: android.graphics.Bitmap?
-            ) {
+            override fun onPageStarted(view: WebView, url: String, favicon: android.graphics.Bitmap?) {
                 currentStartUrl = url
                 progress.visibility = View.VISIBLE
                 progress.progress = 0
+                Log.i(TAG, "${activeProfile.providerId}: loading $url")
             }
 
             override fun onPageFinished(view: WebView, url: String) {
                 currentStartUrl = url
                 progress.visibility = View.GONE
+                Log.i(TAG, "${activeProfile.providerId}: page finished $url")
+            }
+
+            override fun onReceivedHttpError(
+                view: WebView,
+                request: WebResourceRequest,
+                errorResponse: android.webkit.WebResourceResponse
+            ) {
+                super.onReceivedHttpError(view, request, errorResponse)
+                if (request.isForMainFrame) {
+                    Log.e(TAG, "${activeProfile.providerId}: HTTP ${errorResponse.statusCode} for ${request.url}")
+                }
             }
 
             override fun onReceivedError(
@@ -223,6 +236,7 @@ class CloudPlayerActivity : Activity() {
             ) {
                 super.onReceivedError(view, request, error)
                 if (request.isForMainFrame) {
+                    Log.e(TAG, "${activeProfile.providerId}: ${error.description}")
                     Toast.makeText(
                         this@CloudPlayerActivity,
                         "Falha ao carregar o serviço. Verifique a conexão ou tente recarregar.",
@@ -243,8 +257,25 @@ class CloudPlayerActivity : Activity() {
             }
         }
         content.addView(webView, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            0,
+            1f
         ))
+    }
+
+    private fun openOfficialProviderApp() {
+        try {
+            val launchIntent = packageManager.getLaunchIntentForPackage(GFN_PACKAGE)
+            if (launchIntent != null) {
+                startActivity(launchIntent)
+            } else {
+                openExternal("https://play.google.com/store/apps/details?id=$GFN_PACKAGE")
+            }
+        } catch (_: ActivityNotFoundException) {
+            openExternal("https://play.google.com/store/apps/details?id=$GFN_PACKAGE")
+        } catch (_: SecurityException) {
+            openExternal("https://play.google.com/store/apps/details?id=$GFN_PACKAGE")
+        }
     }
 
     private fun routeNavigation(uri: Uri): Boolean {
@@ -264,10 +295,10 @@ class CloudPlayerActivity : Activity() {
         Button(this).apply {
             text = label
             isAllCaps = false
-            textSize = 16f
-            minWidth = dp(42)
+            textSize = 15f
+            minWidth = dp(40)
             minimumHeight = dp(44)
-            setPadding(dp(4), 0, dp(4), 0)
+            setPadding(dp(3), 0, dp(3), 0)
             setTextColor(TEXT)
             backgroundTintList = android.content.res.ColorStateList.valueOf(ACCENT)
             setOnClickListener { action() }
@@ -299,7 +330,26 @@ class CloudPlayerActivity : Activity() {
             val target = currentStartUrl.ifBlank { profile?.entryUrl.orEmpty() }
             if (target.isNotBlank()) openExternal(target)
         })
+        if (profile?.providerId == ProviderWebProfiles.GEFORCE_NOW_ID) {
+            page.addView(actionButton("Abrir app GeForce NOW") { openOfficialProviderApp() })
+        }
         setContentView(page)
+    }
+
+    private fun applyFullscreenFlags() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.let { controller ->
+                controller.systemBarsBehavior =
+                    android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.hide(WindowInsets.Type.systemBars())
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
     }
 
     private fun hideCustomView() {

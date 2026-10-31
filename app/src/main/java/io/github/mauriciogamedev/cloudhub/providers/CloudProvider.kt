@@ -5,13 +5,10 @@ enum class ProviderIntegrationStage {
     EXTERNAL_HANDOFF
 }
 
-/**
- * Describes the cost of accessing the streaming service itself.
- * This is intentionally separate from whether an individual game is free.
- */
 enum class ProviderAccessModel(val displayName: String) {
     FREE_GAMES_WITH_FREE_ACCOUNT("ACESSO GRÁTIS A TÍTULOS SELECIONADOS"),
     FREE_TIER_AVAILABLE("PLANO GRATUITO DISPONÍVEL"),
+    LOCAL_NETWORK_FREE("GRÁTIS • STREAMING A PARTIR DE UM PC NA REDE"),
     PAID_SUBSCRIPTION("ASSINATURA PAGA"),
     PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE("ASSINATURA • TESTE PODE VARIAR")
 }

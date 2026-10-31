@@ -33,7 +33,6 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = backgroundColor
         window.navigationBarColor = backgroundColor
-
         val page = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(backgroundColor)
@@ -44,7 +43,6 @@ class MainActivity : Activity() {
             clipToPadding = false
             addView(page)
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.setDecorFitsSystemWindows(false)
             scroll.setOnApplyWindowInsetsListener { _, insets ->
@@ -55,29 +53,16 @@ class MainActivity : Activity() {
         }
 
         page.addView(textView("CLOUD HUB", 13f, accentColor, bold = true), matchWidth())
+        page.addView(textView("Seus jogos em nuvem, em um só lugar.", 27f, primaryTextColor, bold = true), withMargins(bottom = 8))
         page.addView(
-            textView("Seus jogos em nuvem, em um só lugar.", 27f, primaryTextColor, bold = true),
-            withMargins(bottom = 8)
-        )
-        page.addView(
-            textView(
-                "Uma biblioteca única, com prioridade para jogos gratuitos e serviços com plano grátis.",
-                14f,
-                secondaryTextColor
-            ),
+            textView("Uma biblioteca única, com prioridade para jogos gratuitos e serviços com plano grátis.", 14f, secondaryTextColor),
             withMargins(bottom = 24)
         )
-
         page.addView(textView("JOGOS • GRATUITOS PRIMEIRO", 12f, accentColor, bold = true), withMargins(bottom = 8))
         page.addView(
-            textView(
-                "12 jogos free-to-play no catálogo inicial. O custo do jogo e o do serviço são diferentes; a lista regional do GFN pode mudar.",
-                12f,
-                secondaryTextColor
-            ),
+            textView("12 jogos free-to-play no catálogo inicial. O custo do jogo e o do serviço são diferentes; a lista regional do GFN pode mudar.", 12f, secondaryTextColor),
             withMargins(bottom = 10)
         )
-
         val filters = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.START
@@ -95,11 +80,7 @@ class MainActivity : Activity() {
             page.addView(createProviderCard(provider), withMargins(bottom = 12))
         }
         page.addView(
-            textView(
-                "Protótipo 0.4.1 • Xbox, GeForce NOW, Boosteroid e Blacknut com players internos experimentais.",
-                12f,
-                secondaryTextColor
-            ),
+            textView("Protótipo 0.4.2 • Xbox touch/performance, players web experimentais e Steam Link local.", 12f, secondaryTextColor),
             withMargins(top = 10)
         )
         setContentView(scroll)
@@ -135,16 +116,11 @@ class MainActivity : Activity() {
         val games = GameCatalog.filtered(selectedGameFilter)
         if (games.isEmpty()) {
             gamesContainer.addView(
-                textView(
-                    "Ainda não há jogos verificados nesta categoria. Vamos ampliar o catálogo sem inventar compatibilidade.",
-                    13f,
-                    secondaryTextColor
-                ),
+                textView("Ainda não há jogos verificados nesta categoria. Vamos ampliar o catálogo sem inventar compatibilidade.", 13f, secondaryTextColor),
                 withMargins(bottom = 12)
             )
             return
         }
-
         games.forEach { game ->
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
@@ -154,7 +130,6 @@ class MainActivity : Activity() {
             card.addView(textView(game.title, 18f, primaryTextColor, bold = true), matchWidth())
             card.addView(textView(game.accessType.displayName, 11f, accentColor, bold = true), withMargins(top = 5))
             card.addView(textView(game.description, 13f, secondaryTextColor), withMargins(top = 5, bottom = 10))
-
             game.providerLaunchUrls.forEach { (providerId, launchUrl) ->
                 val provider = ProviderCatalog.findById(providerId) ?: return@forEach
                 val openButton = Button(this).apply {
@@ -194,19 +169,16 @@ class MainActivity : Activity() {
             ProviderIntegrationStage.EXTERNAL_HANDOFF -> "ACESSO EXTERNO"
         }
         card.addView(textView(integrationLabel, 10f, accentColor, bold = true), withMargins(top = 12))
-        card.addView(
-            textView(provider.accessModel.displayName, 12f, primaryTextColor, bold = true),
-            withMargins(top = 8)
-        )
+        card.addView(textView(provider.accessModel.displayName, 12f, primaryTextColor, bold = true), withMargins(top = 8))
         card.addView(textView(provider.accessNote, 12f, secondaryTextColor), withMargins(top = 4))
         card.addView(textView(provider.integrationNote, 12f, secondaryTextColor), withMargins(top = 6))
-
         val button = Button(this).apply {
             text = when (provider.id) {
                 ProviderCatalog.XBOX_CLOUD_ID -> "Abrir Xbox Cloud"
                 ProviderCatalog.GEFORCE_NOW_ID,
                 ProviderCatalog.BOOSTEROID_ID,
                 ProviderCatalog.BLACKNUT_ID -> "Testar player interno"
+                ProviderCatalog.STEAM_LINK_ID -> "Abrir Steam Link"
                 else -> "Abrir serviço"
             }
             isAllCaps = false
@@ -239,15 +211,12 @@ class MainActivity : Activity() {
         }
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
-
     private fun matchWidth(): LinearLayout.LayoutParams =
         LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-
     private fun wrapMargins(end: Int = 0): LinearLayout.LayoutParams =
         LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             marginEnd = dp(end)
         }
-
     private fun withMargins(top: Int = 0, bottom: Int = 0, end: Int = 0): LinearLayout.LayoutParams =
         LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             topMargin = dp(top)

@@ -7,6 +7,7 @@ object ProviderCatalog {
     const val GEFORCE_NOW_ID = "geforce-now"
     const val BOOSTEROID_ID = "boosteroid"
     const val BLACKNUT_ID = "blacknut"
+    const val STEAM_LINK_ID = "steam-link"
 
     val all: List<CloudProvider> = listOf(
         CloudProvider(
@@ -17,7 +18,7 @@ object ProviderCatalog {
             integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.FREE_GAMES_WITH_FREE_ACCOUNT,
             accessNote = "Apenas títulos selecionados são grátis na nuvem; a maior parte da biblioteca exige um plano Game Pass elegível.",
-            integrationNote = "Better xCloud 6.7.12 está integrado no WebView experimental. Login e streaming ainda precisam de validação no A06."
+            integrationNote = "Better xCloud 6.7.12 integrado. O Cloud Hub oferece ajustes touch e perfil 720p para estabilidade no A06."
         ),
         CloudProvider(
             id = GEFORCE_NOW_ID,
@@ -26,8 +27,8 @@ object ProviderCatalog {
             launchUrl = "https://play.geforcenow.com/",
             integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.FREE_TIER_AVAILABLE,
-            accessNote = "A ABYA oferece plano grátis no Brasil sem método de pagamento. O app lista mais de 100 jogos gratuitos; jogos pagos ainda exigem posse e filas/sessões podem ter limites.",
-            integrationNote = "Player WebView interno experimental baseado no site oficial. Chrome Android é suportado pela NVIDIA; WebView embutido ainda precisa de validação no A06."
+            accessNote = "A ABYA oferece plano grátis no Brasil sem método de pagamento. Jogos pagos ainda exigem posse e filas/sessões podem ter limites.",
+            integrationNote = "Player interno experimental com modo de compatibilidade do user-agent Android, diagnóstico e atalho para o app oficial."
         ),
         CloudProvider(
             id = BOOSTEROID_ID,
@@ -37,7 +38,7 @@ object ProviderCatalog {
             integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.PAID_SUBSCRIPTION,
             accessNote = "Requer assinatura ativa. Os jogos podem exigir compra separada em uma loja compatível.",
-            integrationNote = "Player WebView experimental. O serviço publica requisitos para navegador Android; incorporação no WebView precisa de validação no A06."
+            integrationNote = "Player WebView experimental; a compatibilidade real precisa ser validada no A06."
         ),
         CloudProvider(
             id = BLACKNUT_ID,
@@ -47,7 +48,17 @@ object ProviderCatalog {
             integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.PAID_SUBSCRIPTION_WITH_TRIAL_WHERE_AVAILABLE,
             accessNote = "Requer assinatura; períodos de teste podem variar por país e oferta.",
-            integrationNote = "Aplicativo web oficial aberto no player interno experimental; autenticação e streaming precisam de validação no A06."
+            integrationNote = "Aplicativo web oficial no player interno experimental; autenticação e streaming precisam de validação."
+        ),
+        CloudProvider(
+            id = STEAM_LINK_ID,
+            name = "Steam Link • PC na rede local",
+            description = "Transmita para o A06 jogos que estão rodando em um computador com Steam.",
+            launchUrl = "https://play.google.com/store/apps/details?id=com.valvesoftware.steamlink",
+            integrationStage = ProviderIntegrationStage.EXTERNAL_HANDOFF,
+            accessModel = ProviderAccessModel.LOCAL_NETWORK_FREE,
+            accessNote = "Steam Link é gratuito. O jogo precisa estar instalado e em execução num PC anfitrião; Steam Cloud sincroniza saves, não executa jogos.",
+            integrationNote = "Abre o app oficial Steam Link. Para melhor resultado, PC por Ethernet e A06 conectado ao Wi-Fi de 5 GHz na mesma rede."
         )
     )
 

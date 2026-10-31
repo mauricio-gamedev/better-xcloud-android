@@ -6,7 +6,8 @@ data class ProviderWebProfile(
     val providerId: String,
     val displayName: String,
     val entryUrl: String,
-    val trustedHosts: Set<String>
+    val trustedHosts: Set<String>,
+    val normalizeAndroidWebViewUserAgent: Boolean = false
 ) {
     fun allows(uri: URI): Boolean {
         if (!uri.scheme.equals("https", ignoreCase = true)) return false
@@ -38,7 +39,8 @@ object ProviderWebProfiles {
         trustedHosts = commonStoreAndIdentityHosts + setOf(
             "play.geforcenow.com", "nvidia.com", "geforcenow.com", "nvda.ws",
             "xbox.com", "xboxlive.com", "microsoft.com", "live.com"
-        )
+        ),
+        normalizeAndroidWebViewUserAgent = true
     )
 
     private val boosteroid = ProviderWebProfile(

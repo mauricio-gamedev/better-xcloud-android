@@ -47,7 +47,6 @@ class XboxCloudProviderAdapter : CloudProviderAdapter {
     }
 }
 
-/** Shared player shell; each service supplies its own HTTPS allowlist. */
 class EmbeddedWebProviderAdapter(
     private val providerId: String
 ) : CloudProviderAdapter {
@@ -67,12 +66,35 @@ class EmbeddedWebProviderAdapter(
     }
 }
 
+class SteamLinkProviderAdapter : CloudProviderAdapter {
+    override fun launch(activity: Activity, destination: String, gameTitle: String?) {
+        try {
+            val launchIntent = activity.packageManager.getLaunchIntentForPackage("com.valvesoftware.steamlink")
+            if (launchIntent != null) {
+                activity.startActivity(launchIntent)
+                return
+            }
+            activity.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=com.valvesoftware.steamlink")
+                )
+            )
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(activity, "Não foi possível abrir a Google Play.", Toast.LENGTH_LONG).show()
+        } catch (_: SecurityException) {
+            Toast.makeText(activity, "O Android bloqueou a abertura do Steam Link.", Toast.LENGTH_LONG).show()
+        }
+    }
+}
+
 object ProviderAdapterRegistry {
     private val external = ExternalLinkProviderAdapter()
     private val xbox = XboxCloudProviderAdapter()
     private val geforceNow = EmbeddedWebProviderAdapter(ProviderCatalog.GEFORCE_NOW_ID)
     private val boosteroid = EmbeddedWebProviderAdapter(ProviderCatalog.BOOSTEROID_ID)
     private val blacknut = EmbeddedWebProviderAdapter(ProviderCatalog.BLACKNUT_ID)
+    private val steamLink = SteamLinkProviderAdapter()
 
     fun forProvider(provider: CloudProvider): CloudProviderAdapter =
         when (provider.id) {
@@ -80,6 +102,7 @@ object ProviderAdapterRegistry {
             ProviderCatalog.GEFORCE_NOW_ID -> geforceNow
             ProviderCatalog.BOOSTEROID_ID -> boosteroid
             ProviderCatalog.BLACKNUT_ID -> blacknut
+            ProviderCatalog.STEAM_LINK_ID -> steamLink
             else -> external
         }
 }

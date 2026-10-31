@@ -3,6 +3,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <queries>
+        <package android:name="com.valvesoftware.steamlink" />
+        <package android:name="com.nvidia.geforcenow" />
+    </queries>
+
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="true"

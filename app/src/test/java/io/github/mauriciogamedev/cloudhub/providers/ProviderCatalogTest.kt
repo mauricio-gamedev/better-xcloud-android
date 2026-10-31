@@ -23,9 +23,15 @@ class ProviderCatalogTest {
     }
 
     @Test
-    fun initialCatalogContainsTheFourPlannedServices() {
+    fun catalogContainsFourCloudServicesAndSteamLink() {
         val ids = ProviderCatalog.all.map { it.id }.toSet()
-        assertTrue(ids.containsAll(setOf("xbox-cloud", "geforce-now", "boosteroid", "blacknut")))
+        assertTrue(ids.containsAll(setOf(
+            ProviderCatalog.XBOX_CLOUD_ID,
+            ProviderCatalog.GEFORCE_NOW_ID,
+            ProviderCatalog.BOOSTEROID_ID,
+            ProviderCatalog.BLACKNUT_ID,
+            ProviderCatalog.STEAM_LINK_ID
+        )))
     }
 
     @Test
@@ -52,6 +58,15 @@ class ProviderCatalogTest {
                 ProviderCatalog.findById(id)?.integrationStage
             )
         }
+    }
+
+    @Test
+    fun steamLinkIsFreeButRequiresAnExternalPcHost() {
+        val steamLink = ProviderCatalog.findById(ProviderCatalog.STEAM_LINK_ID)
+        assertNotNull(steamLink)
+        assertEquals(ProviderAccessModel.LOCAL_NETWORK_FREE, steamLink?.accessModel)
+        assertEquals(ProviderIntegrationStage.EXTERNAL_HANDOFF, steamLink?.integrationStage)
+        assertTrue(steamLink?.accessNote?.contains("PC anfitrião") == true)
     }
 
     @Test
