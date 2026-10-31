@@ -1,0 +1,8 @@
+Better xCloud userscript
+Project: https://github.com/redphx/better-xcloud
+Revision: f8397043f6d2148d2345d508902a38c69cf1ee20
+Upstream path: dist/better-xcloud.user.js
+Upstream Git blob SHA: 05ad4c1e2d31caaaeaa2bcf3b7bd06d3c0f76a0f
+Version: 6.7.12
+License: MIT
+See THIRD_PARTY_NOTICES.md in the source repository for the full license text.
