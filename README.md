@@ -1,7 +1,7 @@
 # Cloud Hub
 
 **Codinome de desenvolvimento:** Better xCloud Custom  
-**Versão de desenvolvimento:** 0.3.0  
+**Versão de desenvolvimento:** 0.3.1  
 **Dispositivo de referência:** Samsung Galaxy A06 (Android 16)
 
 O Cloud Hub é uma plataforma Android em desenvolvimento para reunir serviços de cloud gaming em uma única interface. O foco é **free-first**: jogos free-to-play e formas legítimas de jogar sem comprar o título aparecem antes das opções pagas.
