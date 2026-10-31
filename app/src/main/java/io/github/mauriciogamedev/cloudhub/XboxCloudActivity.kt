@@ -176,8 +176,8 @@ class XboxCloudActivity : Activity() {
         if (rawUrl.isNullOrBlank()) return DEFAULT_START_URL
 
         val uri = Uri.parse(rawUrl)
-        val validPath = uri.path?.startsWith("/pt-BR/play") == true ||
-            uri.path?.startsWith("/en-US/play") == true
+        val path = uri.path?.lowercase().orEmpty()
+        val validPath = path.startsWith("/pt-br/play") || path.startsWith("/en-us/play")
         return if (
             uri.scheme == "https" &&
             uri.host == "www.xbox.com" &&
