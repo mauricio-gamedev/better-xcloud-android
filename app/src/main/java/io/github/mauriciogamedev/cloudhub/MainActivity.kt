@@ -181,7 +181,11 @@ class MainActivity : Activity() {
             game.providerLaunchUrls.forEach { (providerId, launchUrl) ->
                 val provider = ProviderCatalog.findById(providerId) ?: return@forEach
                 val openButton = Button(this).apply {
-                    text = "Jogar via ${provider.name}"
+                    text = if (provider.id == ProviderCatalog.GEFORCE_NOW_ID) {
+                        "Abrir catálogo no GeForce NOW"
+                    } else {
+                        "Abrir jogo via ${provider.name}"
+                    }
                     isAllCaps = false
                     textSize = 13f
                     setTextColor(Color.WHITE)
