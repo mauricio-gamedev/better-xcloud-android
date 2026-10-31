@@ -1,32 +1,51 @@
 # Cloud Hub
 
 **Codinome de desenvolvimento:** Better xCloud Custom  
-**Versão de desenvolvimento:** 0.2.0  
+**Versão de desenvolvimento:** 0.3.0  
 **Dispositivo de referência:** Samsung Galaxy A06 (Android 16)
 
-O Cloud Hub é uma plataforma Android em desenvolvimento para reunir serviços de cloud gaming em uma única interface. O foco do catálogo é **free-first**: jogos free-to-play e formas legítimas de jogar sem assinatura aparecem antes das opções pagas.
+O Cloud Hub é uma plataforma Android em desenvolvimento para reunir serviços de cloud gaming em uma única interface. O foco é **free-first**: jogos free-to-play e formas legítimas de jogar sem comprar o título aparecem antes das opções pagas.
 
-> **Estado atual:** o APK agora inclui o userscript Better xCloud 6.7.12 e tenta integrá-lo ao Xbox Cloud por injeção no início da página via AndroidX WebKit. Essa integração é experimental e ainda precisa de validação real de login, controle, áudio, streaming e consumo de memória no Galaxy A06. GeForce NOW, Boosteroid e Blacknut continuam abrindo seus destinos oficiais externamente.
+> **Estado atual:** o APK inclui o userscript Better xCloud 6.7.12 e tenta integrá-lo ao Xbox Cloud por injeção no início da página via AndroidX WebKit. A integração Xbox é experimental e ainda precisa de validação real de login, controle, áudio, streaming e consumo de memória no Galaxy A06. GeForce NOW, Boosteroid e Blacknut abrem seus destinos oficiais externamente.
 
-## Foco em jogos gratuitos
+## Catálogo grátis
 
-O projeto separa duas coisas que não podem ser confundidas:
+A versão 0.3.0 traz **12 jogos free-to-play** no filtro inicial "Só grátis":
+
+- Fortnite
+- Apex Legends
+- Destiny 2
+- Rocket League
+- Genshin Impact
+- Honkai: Star Rail
+- Wuthering Waves
+- Zenless Zone Zero
+- Marvel Rivals
+- Counter-Strike 2
+- Warframe
+- Dota 2
+
+Fortnite é o único título da lista com acesso grátis verificado no Xbox Cloud e no GeForce NOW. Os outros 11 estão associados ao GeForce NOW; a compatibilidade foi conferida em um catálogo regional brasileiro com snapshot visível de 13/09/2026. A lista regional pode mudar, então o app exibe essa ressalva e o usuário deve confirmar a disponibilidade no serviço antes de iniciar.
+
+A ABYA confirma plano gratuito no Brasil e mais de 75 jogos free-to-play; a listagem do app GeForce NOW na Google Play, atualizada em 28/10/2026, informa mais de 100 títulos grátis e cita Fortnite, Apex Legends e Destiny 2.
+
+## Custo do jogo não é custo do serviço
+
+O projeto mantém essas duas informações separadas:
 
 1. **Custo do jogo:** free-to-play, promoção gratuita, incluído em assinatura, compra necessária ou não verificado.
-2. **Custo do serviço:** plano gratuito, catálogo gratuito limitado, assinatura paga ou teste regional.
+2. **Custo do serviço:** plano gratuito, acesso gratuito a títulos selecionados, assinatura paga ou teste regional.
 
-A tela inicial começa filtrada em jogos grátis. A lista só deve incluir títulos cuja condição gratuita e compatibilidade com pelo menos um provedor tenham sido verificadas. Por enquanto, Fortnite é o primeiro título confirmado para Xbox Cloud Gaming e GeForce NOW.
+Assim, um jogo gratuito pode continuar exigindo uma conta ou plano do serviço, e um plano gratuito do serviço não transforma jogos pagos em gratuitos. O filtro "Só grátis" não inclui jogos que exigem assinatura ou compra individual.
 
-### Provedores no catálogo
+## Provedores no catálogo
 
 | Serviço | Acesso ao serviço | Integração |
 | --- | --- | --- |
 | Xbox Cloud Gaming | Alguns títulos com conta Microsoft gratuita; catálogo maior exige plano elegível | Better xCloud embutido em WebView experimental |
-| GeForce NOW Powered by ABYA | Plano gratuito disponível no Brasil; jogos comprados podem exigir posse na loja | Abre serviço oficial externamente |
+| GeForce NOW Powered by ABYA | Membership gratuita no Brasil; limites de fila e sessão | Abre serviço oficial externamente |
 | Boosteroid | Assinatura paga | Abre serviço oficial externamente |
 | Blacknut | Assinatura; teste pode variar por região | Abre serviço oficial externamente |
-
-A disponibilidade dos planos, jogos, sessões e servidores pode mudar por país e ao longo do tempo. A tela diferencia serviço gratuito de jogo gratuito.
 
 ## Integração Xbox / Better xCloud
 
@@ -36,7 +55,7 @@ A disponibilidade dos planos, jogos, sessões e servidores pode mudar por país 
 - Injeção com `WebViewCompat.addDocumentStartJavaScript`, limitada à origem `https://www.xbox.com`.
 - O script é executado somente no frame principal.
 - Sem `addJavascriptInterface`: nenhum bridge genérico do JavaScript da página para métodos nativos é exposto.
-- Se o WebView não suportar a injeção no início do documento, o app apresenta uma alternativa para abrir o Xbox no navegador.
+- Se o WebView não suportar a injeção no início do documento, o app oferece alternativa para abrir o Xbox no navegador.
 
 O código-fonte do aplicativo Android oficial do Better xCloud não está neste repositório upstream; este projeto usa uma implementação Android própria e o userscript aberto, mantendo os avisos MIT. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
