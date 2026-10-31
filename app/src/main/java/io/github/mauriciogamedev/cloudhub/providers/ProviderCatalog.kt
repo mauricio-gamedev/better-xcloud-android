@@ -14,17 +14,17 @@ object ProviderCatalog {
             launchUrl = "https://www.xbox.com/pt-BR/play",
             integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.FREE_GAMES_WITH_FREE_ACCOUNT,
-            accessNote = "Catálogo gratuito limitado; a maior parte da biblioteca exige um plano Game Pass elegível.",
+            accessNote = "Apenas títulos selecionados são grátis na nuvem; a maior parte da biblioteca exige um plano Game Pass elegível.",
             integrationNote = "Better xCloud 6.7.12 está integrado no WebView experimental. Login e streaming ainda precisam de validação no A06."
         ),
         CloudProvider(
             id = GEFORCE_NOW_ID,
             name = "GeForce NOW",
-            description = "Transmita jogos compatíveis das suas bibliotecas de PC.",
+            description = "Transmita jogos compatíveis de suas bibliotecas de PC e uma seleção de jogos free-to-play.",
             launchUrl = "https://play.geforcenow.com/",
             integrationStage = ProviderIntegrationStage.EXTERNAL_HANDOFF,
             accessModel = ProviderAccessModel.FREE_TIER_AVAILABLE,
-            accessNote = "A ABYA oferece plano gratuito no Brasil, com limitações de fila e sessão. Muitos jogos também exigem que você os possua.",
+            accessNote = "A ABYA oferece plano grátis no Brasil sem método de pagamento. O app lista mais de 100 jogos gratuitos; jogos pagos ainda exigem posse e filas/sessões podem ter limites.",
             integrationNote = "Abertura externa para o serviço oficial; login e streaming permanecem sob controle do provedor."
         ),
         CloudProvider(
