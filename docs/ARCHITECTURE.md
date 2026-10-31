@@ -1,80 +1,95 @@
-# Arquitetura inicial
+# Arquitetura
 
 ## Objetivo
 
-Oferecer uma interface Android única para descobrir e abrir serviços de cloud gaming, evoluindo gradualmente para integrações profundas onde houver suporte técnico, compatibilidade e permissão.
-
-O projeto não tenta substituir as plataformas de autenticação nem transportar sessões entre provedores.
+Aplicativo Android multi-provider para descobrir jogos, priorizar opções gratuitas e abrir serviços de cloud gaming. Cada provedor possui um adaptador independente.
 
 ## Camadas
 
 ### Android app
+- Interface nativa em Kotlin.
+- Biblioteca local de jogos com filtros free-first.
+- Catálogo e status de custo dos serviços.
+- Encaminhamento externo para provedores sem integração interna.
+- Tela WebView dedicada ao Xbox Cloud Gaming.
 
-Aplicativo nativo em Kotlin. Responsável por:
-- navegação e interface comum;
-- catálogo e preferências locais;
-- encaminhamento seguro para serviços oficiais;
-- diagnóstico do dispositivo;
-- integração futura com módulos de provedor.
+### Catálogo de jogos
 
-### Catálogo e contrato de provedor
+O custo do jogo é independente do custo do serviço. Os tipos atuais são:
+- `FREE_TO_PLAY`
+- `FREE_PROMOTION`
+- `SUBSCRIPTION_INCLUDED`
+- `PAID_PURCHASE`
+- `UNKNOWN`
 
-Cada serviço deve declarar:
-- identificador estável;
-- nome e descrição;
-- URL ou destino oficial;
-- modalidade de integração;
-- capacidades realmente suportadas;
-- limitações e observações por dispositivo/região.
+A ordenação free-first usa essa prioridade. O filtro "Só grátis" inclui somente `FREE_TO_PLAY` e `FREE_PROMOTION`. Títulos sem verificação de disponibilidade em cloud não podem ser adicionados só porque aparecem como gratuitos na loja.
 
-Um item no catálogo não significa que o serviço esteja integrado dentro do app.
+### Custo do serviço
+
+Cada provedor também declara seu modelo de acesso:
+- jogos gratuitos com conta sem assinatura;
+- plano gratuito com limitações;
+- assinatura paga;
+- assinatura com teste regional eventual.
+
+Essa informação não altera o custo individual dos jogos. Exemplo: GeForce NOW Powered by ABYA oferece um plano gratuito no Brasil, mas muitos jogos ainda precisam ser comprados na loja; Fortnite é free-to-play.
 
 ### Adaptadores de provedores
 
-As integrações serão isoladas por provedor. Modalidades previstas:
+`ProviderAdapterRegistry` escolhe a estratégia pelo identificador do provedor:
+- Xbox: `XboxCloudProviderAdapter` abre `XboxCloudActivity`.
+- GeForce NOW, Boosteroid e Blacknut: `ExternalLinkProviderAdapter` abre os destinos HTTPS oficiais.
 
-| Modalidade | Uso |
-| --- | --- |
-| `EXTERNAL_HANDOFF` | Abre o app oficial, quando o Android resolver o link, ou o navegador |
-| `IN_APP_WEB` | WebView somente após validação de suporte, login, controles e política do serviço |
-| `CUSTOM_SCRIPT` | Script próprio ou userscript autorizado, como a futura integração do núcleo Better xCloud |
-| `NATIVE_REMOTE_PLAY` | Integração com recursos oficiais de Remote Play, quando tecnicamente viável |
+Integrações internas adicionais devem ser implementadas em módulos próprios. Não presumir que uma WebView genérica substitua o app oficial de um serviço.
 
-### Núcleo Xbox
+## Xbox / Better xCloud
 
-O código do userscript Better xCloud será mantido como módulo separado da interface e do catálogo. A integração exige:
-1. fixar uma revisão upstream;
-2. revisar a licença e preservar avisos/atribuições;
-3. definir o ponto de injeção no mecanismo WebView;
-4. testar login, navegação, controle, áudio, vídeo e retomada;
-5. validar uso de memória e estabilidade no Galaxy A06.
+O userscript público Better xCloud 6.7.12 é empacotado localmente no APK e fixado na revisão upstream:
 
-O código-fonte do aplicativo Android upstream não está presente neste repositório. Não devemos tratar este projeto como um fork compilável do app oficial.
+- Repositório: `redphx/better-xcloud`
+- Commit: `f8397043f6d2148d2345d508902a38c69cf1ee20`
+- Arquivo: `dist/better-xcloud.user.js`
+- Blob SHA: `05ad4c1e2d31caaaeaa2bcf3b7bd06d3c0f76a0f`
 
-## Regras de segurança
+`XboxCloudActivity`:
+1. Verifica `WebViewFeature.DOCUMENT_START_SCRIPT`.
+2. Lê o userscript empacotado no APK.
+3. Registra a injeção com `WebViewCompat.addDocumentStartJavaScript`, limitada à origem `https://www.xbox.com`.
+4. Impede que o userscript inicialize em iframes.
+5. Permite navegação interna apenas nos domínios Xbox/Microsoft/Microsoft login necessários.
+6. Abre outros destinos HTTPS no navegador do sistema.
+7. Destrói a WebView ao encerrar a atividade para liberar memória.
 
-- Nunca pedir ou armazenar senha de terceiros.
-- Não extrair cookies, tokens ou credenciais de outros apps.
-- Não contornar DRM, fila, limites de plano ou controles de região.
-- Preferir destinos HTTPS oficiais.
-- Não injetar scripts em domínios não autorizados.
-- Tratar erros de abertura e provedores indisponíveis sem travar a interface.
+Não é exposta uma bridge `addJavascriptInterface`. Isso evita oferecer a páginas de login e conteúdo web uma interface nativa genérica. Consequentemente, recursos do AppInterface do app Android oficial (atalhos nativos, ponte de vibração, pointer server, atalhos e captura nativa) ainda não estão implementados.
 
-## Regras de desempenho para o Galaxy A06
+Se a feature de injeção não existir no WebView instalado, a tela oferece fallback externo. O app não baixa JavaScript remoto em tempo de execução.
 
-- Não iniciar serviços persistentes sem necessidade.
-- Não manter WebViews de provedores em segundo plano.
-- Evitar filtros gráficos e renderizadores alternativos por padrão.
-- Não forçar resolução, FPS ou bitrate sem medir a rede e a compatibilidade.
-- Medir memória, temperatura, estabilidade e latência antes de promover uma otimização.
+## Segurança
 
-## Critério para marcar uma integração como concluída
+- Permissão de rede limitada ao uso da WebView e abertura de serviços.
+- Tráfego cleartext HTTP desativado.
+- Safe Browsing mantido ativo quando suportado.
+- Injeção de script limitada à origem Xbox.
+- Nenhuma bridge nativa JavaScript genérica.
+- Navegação principal externa encaminhada ao navegador do sistema.
+- Nenhum armazenamento próprio de senha, token ou cookie de outro app.
 
-Uma integração só pode ser marcada como integrada após:
-- fluxo de abertura e autenticação testado;
-- streaming iniciado e encerrado corretamente;
-- controle, áudio e orientação de tela verificados;
-- tratamento de erro e retorno ao catálogo;
-- teste no Galaxy A06 e documentação das limitações.
+## Galaxy A06
 
-Até lá, o catálogo deve exibir claramente que o serviço usa acesso externo ou que a integração está planejada.
+- Uma WebView Xbox é criada somente quando solicitada.
+- Não manter WebViews dos provedores abertas em segundo plano.
+- Destruir WebView em `onDestroy`.
+- Não forçar filtros, WebGL2 ou WebGPU.
+- Não forçar resolução, FPS ou bitrate.
+- Medir memória, temperatura, latência, estabilidade, áudio e controle em dispositivo físico.
+
+## Critério para marcar Xbox como estável
+
+- Login Microsoft e retorno ao Xbox validados.
+- Usuário consegue iniciar e encerrar um jogo.
+- Áudio, controle Bluetooth, toque e orientação testados.
+- Nenhuma falha crítica de navegação.
+- Reentrada e destruição da WebView sem crescimento de memória.
+- Testes em Galaxy A06 com a versão real do Android System WebView.
+
+Até que esses testes sejam concluídos, a integração permanece marcada como experimental.
