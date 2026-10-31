@@ -24,15 +24,31 @@ O custo do jogo é independente do custo do serviço. Os tipos atuais são:
 
 A ordenação free-first usa essa prioridade. O filtro "Só grátis" inclui somente `FREE_TO_PLAY` e `FREE_PROMOTION`. Títulos sem verificação de disponibilidade em cloud não podem ser adicionados só porque aparecem como gratuitos na loja.
 
+A versão 0.3.0 contém 12 títulos free-to-play:
+- Fortnite
+- Apex Legends
+- Destiny 2
+- Rocket League
+- Genshin Impact
+- Honkai: Star Rail
+- Wuthering Waves
+- Zenless Zone Zero
+- Marvel Rivals
+- Counter-Strike 2
+- Warframe
+- Dota 2
+
+Cada registro guarda URL de lançamento por provedor, links das fontes consultadas, data da verificação e uma nota de disponibilidade regional. Para os 11 títulos exclusivos do GeForce NOW, a compatibilidade foi conferida no snapshot de um diretório regional do Brasil, com data visível de 13/09/2026. Como o diretório é terceiro e o catálogo pode mudar, a nota é exibida no card e a disponibilidade deve ser reconfirmada dentro do serviço.
+
 ### Custo do serviço
 
-Cada provedor também declara seu modelo de acesso:
+Cada provedor declara seu modelo de acesso:
 - jogos gratuitos com conta sem assinatura;
 - plano gratuito com limitações;
 - assinatura paga;
 - assinatura com teste regional eventual.
 
-Essa informação não altera o custo individual dos jogos. Exemplo: GeForce NOW Powered by ABYA oferece um plano gratuito no Brasil, mas muitos jogos ainda precisam ser comprados na loja; Fortnite é free-to-play.
+Essa informação não altera o custo individual dos jogos. GeForce NOW Powered by ABYA oferece membership gratuita no Brasil, mas muitos jogos pagos ainda exigem posse na loja. A ABYA informa mais de 75 jogos free-to-play; o app oficial no Google Play lista mais de 100 e destaca Fortnite, Apex Legends e Destiny 2.
 
 ### Adaptadores de provedores
 
