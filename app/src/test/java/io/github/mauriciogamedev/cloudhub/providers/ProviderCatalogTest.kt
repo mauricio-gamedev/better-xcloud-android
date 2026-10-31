@@ -41,6 +41,14 @@ class ProviderCatalogTest {
     }
 
     @Test
+    fun geforceNowUsesTheExperimentalInAppAdapterStage() {
+        assertEquals(
+            ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
+            ProviderCatalog.findById(ProviderCatalog.GEFORCE_NOW_ID)?.integrationStage
+        )
+    }
+
+    @Test
     fun paidProvidersAreNotMislabelledAsFree() {
         assertEquals(
             ProviderAccessModel.PAID_SUBSCRIPTION,

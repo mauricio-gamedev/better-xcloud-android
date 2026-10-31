@@ -22,10 +22,10 @@ object ProviderCatalog {
             name = "GeForce NOW",
             description = "Transmita jogos compatíveis de suas bibliotecas de PC e uma seleção de jogos free-to-play.",
             launchUrl = "https://play.geforcenow.com/",
-            integrationStage = ProviderIntegrationStage.EXTERNAL_HANDOFF,
+            integrationStage = ProviderIntegrationStage.EXPERIMENTAL_IN_APP,
             accessModel = ProviderAccessModel.FREE_TIER_AVAILABLE,
             accessNote = "A ABYA oferece plano grátis no Brasil sem método de pagamento. O app lista mais de 100 jogos gratuitos; jogos pagos ainda exigem posse e filas/sessões podem ter limites.",
-            integrationNote = "Abertura externa para o serviço oficial; login e streaming permanecem sob controle do provedor."
+            integrationNote = "Player WebView interno experimental baseado no site oficial. Chrome Android é suportado pela NVIDIA; WebView embutido ainda precisa de validação no A06."
         ),
         CloudProvider(
             id = "boosteroid",

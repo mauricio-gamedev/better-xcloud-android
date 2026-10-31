@@ -110,7 +110,7 @@ class MainActivity : Activity() {
 
         page.addView(
             textView(
-                "Protótipo 0.3.0 • Xbox integrado em modo experimental; outros serviços abrem seus apps ou sites oficiais.",
+                "Protótipo 0.4.0 • Xbox e GeForce NOW em player WebView experimental; outros serviços seguem externos.",
                 12f,
                 secondaryTextColor
             ),
@@ -182,7 +182,7 @@ class MainActivity : Activity() {
                 val provider = ProviderCatalog.findById(providerId) ?: return@forEach
                 val openButton = Button(this).apply {
                     text = if (provider.id == ProviderCatalog.GEFORCE_NOW_ID) {
-                        "Abrir catálogo no GeForce NOW"
+                        "Abrir catálogo no player interno (experimental)"
                     } else {
                         "Abrir jogo via ${provider.name}"
                     }
@@ -191,7 +191,7 @@ class MainActivity : Activity() {
                     setTextColor(Color.WHITE)
                     backgroundTintList = android.content.res.ColorStateList.valueOf(accentColor)
                     setOnClickListener {
-                        ProviderAdapterRegistry.forProvider(provider).launch(this@MainActivity, launchUrl)
+                        ProviderAdapterRegistry.forProvider(provider).launch(this@MainActivity, launchUrl, game.title)
                     }
                 }
                 card.addView(openButton, withMargins(top = 4))
@@ -235,10 +235,10 @@ class MainActivity : Activity() {
         card.addView(textView(provider.integrationNote, 12f, secondaryTextColor), withMargins(top = 6))
 
         val button = Button(this).apply {
-            text = if (provider.integrationStage == ProviderIntegrationStage.EXPERIMENTAL_IN_APP) {
-                "Abrir Xbox Cloud"
-            } else {
-                "Abrir serviço"
+            text = when (provider.id) {
+                ProviderCatalog.XBOX_CLOUD_ID -> "Abrir Xbox Cloud"
+                ProviderCatalog.GEFORCE_NOW_ID -> "Testar player interno"
+                else -> "Abrir serviço"
             }
             isAllCaps = false
             setTextColor(Color.WHITE)
