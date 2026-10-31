@@ -6,7 +6,7 @@
 
 O Cloud Hub é uma plataforma Android em desenvolvimento para reunir serviços de cloud gaming em uma única interface. O foco é **free-first**: jogos free-to-play e formas legítimas de jogar sem comprar o título aparecem antes das opções pagas.
 
-> **Estado atual:** o APK inclui o userscript Better xCloud 6.7.12 e tenta integrá-lo ao Xbox Cloud por injeção no início da página via AndroidX WebKit. A integração Xbox é experimental e ainda precisa de validação real de login, controle, áudio, streaming e consumo de memória no Galaxy A06. GeForce NOW, Boosteroid e Blacknut abrem seus destinos oficiais externamente.
+> **Estado atual:** o APK inclui o userscript Better xCloud 6.7.12. O botão de Fortnite no Xbox agora abre a página específica do produto dentro da Activity do Cloud Hub; o jogador ainda precisa autenticar e confirmar **Jogar** no fluxo do Xbox. A integração Xbox é experimental e ainda precisa de validação real de login, controle, áudio, streaming e consumo de memória no Galaxy A06. GeForce NOW, Boosteroid e Blacknut ainda não possuem player integrado.
 
 ## Catálogo grátis
 
