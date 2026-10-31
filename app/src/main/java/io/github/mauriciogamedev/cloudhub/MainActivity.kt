@@ -78,7 +78,7 @@ class MainActivity : Activity() {
         page.addView(textView("JOGOS • GRATUITOS PRIMEIRO", 12f, accentColor, bold = true), withMargins(bottom = 8))
         page.addView(
             textView(
-                "O preço do jogo e o custo do serviço são exibidos separadamente.",
+                "12 jogos free-to-play no catálogo inicial. O custo do jogo e o do serviço são diferentes; a lista regional do GFN pode mudar.",
                 12f,
                 secondaryTextColor
             ),
@@ -110,7 +110,7 @@ class MainActivity : Activity() {
 
         page.addView(
             textView(
-                "Protótipo 0.2.0 • Xbox integrado em modo experimental; outros serviços abrem seus apps ou sites oficiais.",
+                "Protótipo 0.3.0 • Xbox integrado em modo experimental; outros serviços abrem seus apps ou sites oficiais.",
                 12f,
                 secondaryTextColor
             ),
@@ -197,6 +197,12 @@ class MainActivity : Activity() {
                 textView("Verificação: ${game.verifiedOn}", 10f, secondaryTextColor),
                 withMargins(top = 8)
             )
+            if (game.availabilityNote.isNotBlank()) {
+                card.addView(
+                    textView(game.availabilityNote, 10f, secondaryTextColor),
+                    withMargins(top = 4)
+                )
+            }
             gamesContainer.addView(card, withMargins(bottom = 12))
         }
     }
