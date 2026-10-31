@@ -26,6 +26,7 @@ import android.widget.TextView
 import android.widget.Toast
 import io.github.mauriciogamedev.cloudhub.providers.ProviderWebProfile
 import io.github.mauriciogamedev.cloudhub.providers.ProviderWebProfiles
+import io.github.mauriciogamedev.cloudhub.providers.ProviderCatalog
 import java.net.URI
 
 class CloudPlayerActivity : Activity() {
