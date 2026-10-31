@@ -110,7 +110,7 @@ class CloudPlayerActivity : Activity() {
         })
         toolbar.addView(titleColumn, LinearLayout.LayoutParams(0, dp(48), 1f))
         toolbar.addView(actionButton("↻") { playerWebView?.reload() })
-        if (activeProfile.providerId == ProviderWebProfiles.GEFORCE_NOW_ID) {
+        if (activeProfile.providerId == ProviderCatalog.GEFORCE_NOW_ID) {
             toolbar.addView(actionButton("APP") { openOfficialProviderApp() })
         }
         toolbar.addView(actionButton("↗") { openExternal(currentStartUrl) })
@@ -330,7 +330,7 @@ class CloudPlayerActivity : Activity() {
             val target = currentStartUrl.ifBlank { profile?.entryUrl.orEmpty() }
             if (target.isNotBlank()) openExternal(target)
         })
-        if (profile?.providerId == ProviderWebProfiles.GEFORCE_NOW_ID) {
+        if (profile?.providerId == ProviderCatalog.GEFORCE_NOW_ID) {
             page.addView(actionButton("Abrir app GeForce NOW") { openOfficialProviderApp() })
         }
         setContentView(page)
